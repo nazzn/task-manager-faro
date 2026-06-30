@@ -14,8 +14,10 @@ export type Subtask = {
 export type Role = "admin" | "manager" | "user";
 
 export type Attachment = {
+  id?: number | string;
   name: string;
   size: number;
+  url?: string;
   file?: File;
 };
 

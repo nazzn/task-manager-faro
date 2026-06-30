@@ -511,7 +511,10 @@ onUnmounted(() => toggleScroll(false));
 
 /* Submit */
 const handleSubmit = async () => {
-  const result = await submit()
+  const files = attachmentsLocal.value
+    .filter((a: any) => a.file)
+    .map((a: any) => a.file) as File[]
+  const result = await submit(files.length > 0 ? files : undefined)
   if (result.ok) {
     emit("close")
   }

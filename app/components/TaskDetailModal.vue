@@ -212,10 +212,15 @@
               v-if="localTask.attachments?.length"
               class="grid grid-cols-2 gap-3 sm:grid-cols-3"
             >
-              <div
+              <component
+                :is="att.url || att.id ? 'a' : 'div'"
                 v-for="(att, idx) in localTask.attachments"
                 :key="idx"
-                class="group relative flex flex-col rounded-xl border border-slate-100 bg-slate-50 p-2.5"
+                v-bind="att.url || att.id ? { href: att.url || `/api/tasks/${localTask.id}/attachments/${att.id}`, download: att.name, target: '_blank', rel: 'noopener noreferrer' } : {}"
+                :class="[
+                  'group relative flex flex-col rounded-xl border border-slate-100 bg-slate-50 p-2.5 transition',
+                  att.url || att.id ? 'hover:border-[#238A63]/40 hover:bg-[#238A63]/5 cursor-pointer' : ''
+                ]"
               >
                 <div class="flex items-center justify-between mb-1">
                   <svg
@@ -238,7 +243,7 @@
                 <span class="text-[10px] text-slate-400 uppercase">
                   {{ formatDate(localTask.created_at) }}
                 </span>
-              </div>
+              </component>
             </div>
             <div v-else class="text-xs text-slate-400">
               هیچ فایلی پیوست نشده است.

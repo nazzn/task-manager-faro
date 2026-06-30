@@ -378,7 +378,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "update", task: Task): void;
+  (e: "update", task: Task, files?: File[]): void;
 }>();
 
 const userList = [
@@ -405,7 +405,7 @@ const {
   toggleSubtask,
 } = useTaskForm({
   taskToEdit: toRef(props, "taskToEdit"),
-  emitSave: (payload) => emit("update", payload),
+  emitSave: (payload, files) => emit("update", payload, files),
 });
 
 // پیام محدودیت وضعیت برای کاربر عادی
@@ -493,12 +493,13 @@ onUnmounted(() => toggleScroll(false));
 
 // ========== Submit handler ==========
 const handleSubmit = async () => {
-  taskForm.value.attachments = attachmentsLocal.value
-
   taskForm.value.subtasks =
     taskForm.value.subtasks.filter((s) => s.title.trim())
 
-  const result = await submit()
+  const files = attachmentsLocal.value
+    .filter((a: any) => a.file)
+    .map((a: any) => a.file) as File[]
+  const result = await submit(files.length > 0 ? files : undefined)
 
   if (result.ok) {
     emit("close")

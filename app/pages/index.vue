@@ -472,13 +472,13 @@ const handleDeleteTask = async (id: number) => {
 //   closeDetailModal();
 // };
 
-const handleSave = async (payload: Partial<Task>) => {
-  await taskStore.addTask(payload);
+const handleSave = async (payload: Partial<Task>, files?: File[]) => {
+  await taskStore.addTask(payload, files);
   showToast("وظیفه جدید ایجاد شد 🚀");
 };
 
-const handleUpdate = (updatedTask: Task) => {
-  taskStore.updateTask(updatedTask.id, updatedTask);
+const handleUpdate = async (updatedTask: Task, files?: File[]) => {
+  await taskStore.updateTask(updatedTask.id, updatedTask, files);
   showToast("وظیفه با موفقیت ویرایش شد ✨");
   closeEditModal();
 };

@@ -16,8 +16,8 @@ export type TaskForm = {
 
 type UseTaskFormOptions = {
   taskToEdit?: Ref<Task | null | undefined>;
-  onSave?: (task: any) => Promise<void> | void;
-  emitSave?: (task: any) => void;
+  onSave?: (task: any, files?: File[]) => Promise<void> | void;
+  emitSave?: (task: any, files?: File[]) => void;
 };
 
 function uid() {
@@ -291,7 +291,7 @@ export function useTaskForm(options: UseTaskFormOptions = {}) {
     }
   }
 
-  async function submit() {
+  async function submit(files?: File[]) {
     if (!validateForm()) {
       return {
         ok: false,
@@ -304,11 +304,11 @@ export function useTaskForm(options: UseTaskFormOptions = {}) {
       const payload = buildTaskPayload();
 
       if (onSave) {
-        await onSave(payload);
+        await onSave(payload, files);
       }
 
       if (emitSave) {
-        emitSave(payload);
+        emitSave(payload, files);
       }
 
       return {
