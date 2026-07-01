@@ -216,7 +216,7 @@
                 :is="att.url || att.id ? 'a' : 'div'"
                 v-for="(att, idx) in localTask.attachments"
                 :key="idx"
-                v-bind="att.url || att.id ? { href: att.url || `/api/tasks/${localTask.id}/attachments/${att.id}`, download: att.name, target: '_blank', rel: 'noopener noreferrer' } : {}"
+                  v-bind="att.url || att.id ? { href: att.url || `/api/attachments/${att.id}/download`, download: att.name, target: '_blank', rel: 'noopener noreferrer' } : {}"
                 :class="[
                   'group relative flex flex-col rounded-xl border border-slate-100 bg-slate-50 p-2.5 transition',
                   att.url || att.id ? 'hover:border-[#238A63]/40 hover:bg-[#238A63]/5 cursor-pointer' : ''
