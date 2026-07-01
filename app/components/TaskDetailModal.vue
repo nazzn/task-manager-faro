@@ -315,10 +315,13 @@ onMounted(async () => {
       headers: { Authorization: `Bearer ${token}` }
     });
     console.log("subtasks response:", JSON.stringify(subRes));
-    localTask.value = { ...props.task, subtasks: subRes?.data ?? subRes ?? [] };
+    const rawSubtasks = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+    if (Array.isArray(rawSubtasks)) {
+      localTask.value.subtasks = rawSubtasks;
+    }
   } catch(e: any) {
     console.error("subtasks error:", e.message, e.statusCode);
-    localTask.value = { ...props.task, subtasks: [] };
+    // اگر API جداگانه در دسترس نبود، از زیرتسک‌های خود تسک استفاده کن
   }
 
   try {

@@ -367,7 +367,7 @@
 </template>
 
 <script setup lang="ts">
-import { toRef, computed, ref, onMounted, onUnmounted } from "vue";
+import { toRef, computed, ref, watch, onMounted, onUnmounted } from "vue";
 import type { Task } from "~/stores/taskStore";
 import { useTaskForm } from "~/composables/useTaskForm";
 import { useRole } from "~/composables/useRole";
@@ -452,6 +452,11 @@ const handleClickOutside = (event: MouseEvent) => {
 
 // ========== Subtasks visibility ==========
 const showSubtasks = ref(false);
+
+watch(() => taskForm.value.subtasks.length, (len) => {
+  if (len > 0) showSubtasks.value = true
+}, { immediate: true })
+
 const toggleSubtasks = () => {
   showSubtasks.value = !showSubtasks.value;
 };

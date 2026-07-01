@@ -171,7 +171,7 @@ export const useTaskStore = defineStore("taskStore", {
 
     async addTask(payload: any, files?: File[]) {
       try {
-        // ۱. ابتدا خود تسک را بدون پیوست‌ها می‌سازیم
+        // ۱. ساخت تسک با زیرتسک‌های inline (بک‌اند خودش زیرتسک‌ها را پردازش می‌کند)
         const res: any = await taskService.createTask(payload);
         console.log("createTask response:", res);
 
@@ -185,16 +185,17 @@ export const useTaskStore = defineStore("taskStore", {
         }
 
         if (createdTask && createdTask.id) {
-          // ۲. اگر کاربر فایلی انتخاب کرده بود، آن‌ها را آپلود می‌کنیم
+          // ۲. آپلود فایل‌ها
           if (files && files.length > 0) {
             for (const file of files) {
               const formData = new FormData();
               formData.append("file", file);
               await taskService.uploadAttachment(createdTask.id, formData);
             }
-            // ۳. تسک را مجدداً لود می‌کنیم تا پیوست‌های ثبت شده به همراه آبجکت بازگردند
-            createdTask = await this.loadTask(createdTask.id);
           }
+
+          // ۳. بارگذاری مجدد تسک برای دریافت زیرتسک‌ها و پیوست‌ها از سرور
+          createdTask = await this.loadTask(createdTask.id);
 
           if (createdTask) {
             this.tasks.unshift(createdTask);
