@@ -32,22 +32,13 @@ export const taskService = {
     const { request } = useApi()
     return request(`/api/tasks/${id}`, { method: 'DELETE' })
   },
-    async updateSubtask(taskId: number, subtaskId: number, data: { title?: string; is_completed?: boolean; order?: number }) {
+
+  async getSubtasks(taskId: number) {
     const { request } = useApi()
-    // استفاده از ساختار یکپارچه درخواست‌ها
-    return request(`/api/tasks/${taskId}/subtasks/${subtaskId}`, {
-      method: 'PUT',
-      body: data,
-    })
+    return request(`/api/tasks/${taskId}/subtasks`, { method: 'GET' })
   },
 
-  async deleteSubtask(taskId: number, subtaskId: number) {
-    const { request } = useApi()
-    return request(`/api/tasks/${taskId}/subtasks/${subtaskId}`, {
-      method: 'DELETE',
-    })
-  },
-async uploadAttachment(taskId: number, formData: FormData) {
+  async uploadAttachment(taskId: number, formData: FormData) {
   const { request } = useApi()
 
   return request(`/api/tasks/${taskId}/attachments`, {

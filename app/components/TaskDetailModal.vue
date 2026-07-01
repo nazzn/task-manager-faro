@@ -321,7 +321,7 @@ onMounted(async () => {
     }
   } catch(e: any) {
     console.error("subtasks error:", e.message, e.statusCode);
-    // اگر API جداگانه در دسترس نبود، از زیرتسک‌های خود تسک استفاده کن
+    localTask.value.subtasks = props.task.subtasks ?? [];
   }
 
   try {

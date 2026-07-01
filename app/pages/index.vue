@@ -530,7 +530,6 @@ const selectedTask = ref<Task | null>(null);
 
 const openTaskDetail = async (taskId: number) => {
   showDetailModal.value = true;
-  await taskStore.loadTask(taskId);
   try {
     await taskStore.loadTask(taskId);
   } catch (error) {

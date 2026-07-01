@@ -223,7 +223,6 @@
                   <input
                     type="checkbox"
                     v-model="s.is_completed"
-                    @change="toggleSubtask(s.id)"
                   />
                   <input
                     v-model="s.title"

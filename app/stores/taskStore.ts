@@ -144,12 +144,22 @@ export const useTaskStore = defineStore("taskStore", {
         const res = await taskService.getTask(id);
         console.log("getTask response:", res);
 
-        // ساختار پاسخ: { success: true, data: { ...task } }
         const raw: any = res?.success ? res.data : (res?.data ?? res);
         this.selectedTask = {
           ...raw,
           subtasks: raw.subTasks ?? raw.subtasks ?? [],
         } as Task;
+
+        // Fetch subtasks from dedicated endpoint
+        try {
+          const subRes: any = await taskService.getSubtasks(id);
+          const rawSubtasks = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+          if (Array.isArray(rawSubtasks)) {
+            this.selectedTask.subtasks = rawSubtasks;
+          }
+        } catch (e: any) {
+          console.error("Load subtasks error:", e);
+        }
 
         return this.selectedTask;
       } catch (error: any) {
@@ -171,8 +181,9 @@ export const useTaskStore = defineStore("taskStore", {
 
     async addTask(payload: any, files?: File[]) {
       try {
-        // ۱. ساخت تسک با زیرتسک‌های inline (بک‌اند خودش زیرتسک‌ها را پردازش می‌کند)
-        const res: any = await taskService.createTask(payload);
+        const { subtasks, ...taskPayload } = payload;
+
+        const res: any = await taskService.createTask(taskPayload);
         console.log("createTask response:", res);
 
         let createdTask: Task | null = null;
@@ -185,7 +196,7 @@ export const useTaskStore = defineStore("taskStore", {
         }
 
         if (createdTask && createdTask.id) {
-          // ۲. آپلود فایل‌ها
+          // Upload files
           if (files && files.length > 0) {
             for (const file of files) {
               const formData = new FormData();
@@ -194,7 +205,25 @@ export const useTaskStore = defineStore("taskStore", {
             }
           }
 
-          // ۳. بارگذاری مجدد تسک برای دریافت زیرتسک‌ها و پیوست‌ها از سرور
+          // Create subtasks as tasks with parent_id
+          if (subtasks?.length) {
+            const activeSubtasks = subtasks.filter((s: any) => s.title?.trim());
+            for (const sub of activeSubtasks) {
+              await taskService.createTask({
+                title: sub.title.trim(),
+                description: "",
+                status: sub.is_completed ? "done" : "todo",
+                priority: createdTask.priority,
+                assignee_id: createdTask.assignee_id,
+                parent_id: createdTask.id,
+                due_date: createdTask.due_date,
+                project_id: createdTask.project_id,
+                tag_ids: createdTask.tag_ids ?? [],
+              });
+            }
+          }
+
+          // Reload task to get fresh data
           createdTask = await this.loadTask(createdTask.id);
 
           if (createdTask) {
@@ -215,8 +244,9 @@ export const useTaskStore = defineStore("taskStore", {
 
     async updateTask(id: number, payload: any, filesToUpload?: File[]) {
       try {
-        // ۱. آپدیت جزییات اصلی تسک
-        const res: any = await taskService.updateTask(id, payload);
+        const { subtasks, ...taskPayload } = payload;
+
+        const res: any = await taskService.updateTask(id, taskPayload);
         console.log("updateTask response:", res);
 
         let updatedTask: Task | null = null;
@@ -229,23 +259,71 @@ export const useTaskStore = defineStore("taskStore", {
         }
 
         if (updatedTask) {
-          // ۲. اگر فایل‌های جدیدی برای اضافه کردن وجود دارد
+          // Upload files if any
           if (filesToUpload && filesToUpload.length > 0) {
             for (const file of filesToUpload) {
               const formData = new FormData();
               formData.append("file", file);
               await taskService.uploadAttachment(id, formData);
             }
-            // بارگذاری مجدد تسک برای به دست آوردن آرایه جدید پیوست‌ها
-            updatedTask = await this.loadTask(id);
           }
+
+          // Sync subtasks as tasks with parent_id
+          if (subtasks) {
+            const subRes: any = await taskService.getSubtasks(id);
+            const rawSubtasks = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+            const currentSubtasks: Subtask[] = Array.isArray(rawSubtasks) ? rawSubtasks : [];
+            const currentIds = new Set(currentSubtasks.map((s) => s.id));
+
+            const formSubtasks = (subtasks as Subtask[]).filter((s) => s.title?.trim());
+
+            // Create new subtasks
+            for (const sub of formSubtasks) {
+              if (!currentIds.has(sub.id)) {
+                await taskService.createTask({
+                  title: sub.title.trim(),
+                  description: "",
+                  status: sub.is_completed ? "done" : "todo",
+                  priority: updatedTask.priority,
+                  assignee_id: updatedTask.assignee_id,
+                  parent_id: id,
+                  due_date: updatedTask.due_date,
+                  project_id: updatedTask.project_id,
+                  tag_ids: updatedTask.tag_ids ?? [],
+                });
+              }
+            }
+
+            // Update changed subtasks
+            for (const sub of formSubtasks) {
+              if (currentIds.has(sub.id)) {
+                const current = currentSubtasks.find((s) => s.id === sub.id);
+                if (current && current.title !== sub.title.trim()) {
+                  await taskService.updateTask(sub.id, {
+                    title: sub.title.trim(),
+                    status: sub.is_completed ? "done" : "todo",
+                  });
+                }
+              }
+            }
+
+            // Delete removed subtasks
+            const formIds = new Set(formSubtasks.map((s) => s.id));
+            for (const sub of currentSubtasks) {
+              if (!formIds.has(sub.id)) {
+                await taskService.deleteTask(sub.id);
+              }
+            }
+          }
+
+          // Reload task
+          updatedTask = await this.loadTask(id);
 
           const index = this.tasks.findIndex((t) => t.id === id);
           if (index !== -1 && updatedTask) {
             this.tasks[index] = updatedTask;
           }
 
-          // همچنینselectedTask فعلی را بروزرسانی می‌کنیم
           if (this.selectedTask && this.selectedTask.id === id && updatedTask) {
             this.selectedTask = updatedTask;
           }
@@ -276,63 +354,73 @@ export const useTaskStore = defineStore("taskStore", {
 
     async addSubtask(taskId: number, title: string) {
       try {
-        const task = this.tasks.find((t) => t.id === taskId);
-        if (!task) return;
-        const newSubtask: Subtask = {
-          id: Date.now(),
+        const parentTask = this.tasks.find((t) => t.id === taskId);
+        if (!parentTask) return;
+        const res: any = await taskService.createTask({
           title,
-          is_completed: false,
-          order: task.subtasks.length,
-        };
-        const updatedSubtasks = [...task.subtasks, newSubtask];
-        await this.updateTask(taskId, { subtasks: updatedSubtasks });
+          description: "",
+          status: "todo",
+          priority: parentTask.priority,
+          assignee_id: parentTask.assignee_id,
+          parent_id: taskId,
+          due_date: parentTask.due_date,
+          project_id: parentTask.project_id,
+          tag_ids: parentTask.tag_ids ?? [],
+        });
+        // Reload parent's subtasks
+        const subRes: any = await taskService.getSubtasks(taskId);
+        const raw = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+        if (Array.isArray(raw)) {
+          parentTask.subtasks = raw;
+        }
+        return res;
       } catch (error: any) {
         if (error.statusCode === 422 || error.response?.status === 422)
           throw error;
         throw error;
       }
     },
+
     async removeSubtask(taskId: number, subtaskId: number) {
-      try {
-        const task = this.tasks.find((t) => t.id === taskId);
-        if (!task) return;
-        const updatedSubtasks = task.subtasks
-          .filter((s) => s.id !== subtaskId)
-          .map((s, index) => ({ ...s, order: index }));
-        await this.updateTask(taskId, { subtasks: updatedSubtasks });
-      } catch (error: any) {
-        if (error.statusCode === 422 || error.response?.status === 422)
-          throw error;
-        throw error;
-      }
+      await this.deleteSubtask(taskId, subtaskId);
     },
+
     async updateSubtask(taskId: number, subtaskId: number, data: any) {
-      const updated = await taskService.updateSubtask(taskId, subtaskId, data);
+      const updated = await taskService.updateTask(subtaskId, data);
       const task = this.tasks.find((t) => t.id === taskId);
       if (task) {
-        const idx = task.subtasks.findIndex((s) => s.id === subtaskId);
-        if (idx !== -1 && updated && typeof updated === "object") {
-          task.subtasks[idx] = Object.assign({}, task.subtasks[idx], updated);
+        const subRes: any = await taskService.getSubtasks(taskId);
+        const raw = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+        if (Array.isArray(raw)) {
+          task.subtasks = raw;
         }
       }
       return updated;
     },
 
     async deleteSubtask(taskId: number, subtaskId: number) {
-      await taskService.deleteSubtask(taskId, subtaskId);
+      await taskService.deleteTask(subtaskId);
       const task = this.tasks.find((t) => t.id === taskId);
       if (task) {
         task.subtasks = task.subtasks.filter((s) => s.id !== subtaskId);
       }
     },
+
     async toggleSubtask(taskId: number, subtaskId: number) {
       try {
         const task = this.tasks.find((t) => t.id === taskId);
         if (!task) return;
-        const updatedSubtasks = task.subtasks.map((s) =>
-          s.id === subtaskId ? { ...s, is_completed: !s.is_completed } : s,
-        );
-        await this.updateTask(taskId, { subtasks: updatedSubtasks });
+        const sub = task.subtasks.find((s) => s.id === subtaskId);
+        if (!sub) return;
+        await taskService.updateTask(subtaskId, {
+          status: sub.is_completed ? "todo" : "done",
+        });
+        // Reload subtasks
+        const subRes: any = await taskService.getSubtasks(taskId);
+        const raw = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+        if (Array.isArray(raw)) {
+          task.subtasks = raw;
+        }
       } catch (error: any) {
         if (error.statusCode === 422 || error.response?.status === 422)
           throw error;
