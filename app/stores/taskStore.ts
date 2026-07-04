@@ -26,6 +26,22 @@ export interface User {
   username: string;
   role: Role;
 }
+export type Comment = {
+  id: number;
+  content: string;
+  created_at: string;
+  updated_at?: string;
+  user?: {
+    id: number;
+    username: string;
+    role: string;
+  };
+  attachment?: {
+    id: number;
+    name: string;
+    size: number;
+  } | null;
+};
 
 export interface Task {
   id: number;
@@ -68,6 +84,9 @@ export const useTaskStore = defineStore("taskStore", {
     selectedTaskError: "" as string | null,
     statusFilter: null as StatusFilter,
     searchQuery: "",
+    comments: [] as Comment[],
+    commentsLoading: false,
+    commentsError: null as string | null,
   }),
 
   getters: {
@@ -153,7 +172,8 @@ export const useTaskStore = defineStore("taskStore", {
         // Fetch subtasks from dedicated endpoint
         try {
           const subRes: any = await taskService.getSubtasks(id);
-          const rawSubtasks = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+          const rawSubtasks =
+            subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
           if (Array.isArray(rawSubtasks)) {
             this.selectedTask.subtasks = rawSubtasks;
           }
@@ -271,11 +291,16 @@ export const useTaskStore = defineStore("taskStore", {
           // Sync subtasks as tasks with parent_id
           if (subtasks) {
             const subRes: any = await taskService.getSubtasks(id);
-            const rawSubtasks = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
-            const currentSubtasks: Subtask[] = Array.isArray(rawSubtasks) ? rawSubtasks : [];
+            const rawSubtasks =
+              subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+            const currentSubtasks: Subtask[] = Array.isArray(rawSubtasks)
+              ? rawSubtasks
+              : [];
             const currentIds = new Set(currentSubtasks.map((s) => s.id));
 
-            const formSubtasks = (subtasks as Subtask[]).filter((s) => s.title?.trim());
+            const formSubtasks = (subtasks as Subtask[]).filter((s) =>
+              s.title?.trim(),
+            );
 
             // Create new subtasks
             for (const sub of formSubtasks) {
@@ -426,6 +451,38 @@ export const useTaskStore = defineStore("taskStore", {
           throw error;
         throw error;
       }
+    },
+    async loadComments(taskId: number) {
+      this.commentsLoading = true;
+      this.commentsError = null;
+      try {
+        const res: any = await taskService.getComments(taskId);
+        this.comments = Array.isArray(res?.data)
+          ? res.data
+          : (res?.data?.comments ?? []);
+      } catch (e: any) {
+        this.commentsError = e?.message || "خطا در دریافت گزارش‌ها";
+      } finally {
+        this.commentsLoading = false;
+      }
+    },
+
+    async addComment(taskId: number, content: string) {
+      const res: any = await taskService.createComment(taskId, content);
+      const created = res?.data ?? res;
+      if (created) this.comments.unshift(created);
+      return created;
+    },
+
+    async editComment(commentId: number, content: string) {
+      await taskService.updateComment(commentId, content);
+      const idx = this.comments.findIndex((c) => c.id === commentId);
+      if (idx !== -1) this.comments[idx].content = content;
+    },
+
+    async removeComment(commentId: number) {
+      await taskService.deleteComment(commentId);
+      this.comments = this.comments.filter((c) => c.id !== commentId);
     },
   },
 });

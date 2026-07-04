@@ -46,5 +46,34 @@ export const taskService = {
     body: formData
   })
 },
+async deleteAttachment(attachmentId: number) {
+  const { request } = useApi()
+  return request(`/api/attachments/${attachmentId}`, { method: 'DELETE' })
+},
 
+async getComments(taskId: number) {
+  const { request } = useApi()
+  return request(`/api/tasks/${taskId}/comments`, { method: 'GET' })
+},
+
+async createComment(taskId: number, content: string) {
+  const { request } = useApi()
+  return request(`/api/tasks/${taskId}/comments`, {
+    method: 'POST',
+    body: { content },
+  })
+},
+
+async updateComment(commentId: number, content: string) {
+  const { request } = useApi()
+  return request(`/api/comments/${commentId}`, {
+    method: 'PUT',
+    body: { content },
+  })
+},
+
+async deleteComment(commentId: number) {
+  const { request } = useApi()
+  return request(`/api/comments/${commentId}`, { method: 'DELETE' })
+},
 }

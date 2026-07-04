@@ -64,59 +64,92 @@
           <!-- META ROW -->
           <div class="flex flex-wrap items-start gap-4">
             <!-- Assignee -->
-            <!-- این والد اصلی که کلاس w-[143px] داشت را به w-full تغییر دهید تا دراپ‌داون در آن محدود نشود -->
             <div class="w-[143px] relative">
               <div
-                class="w-full rounded-xl hover:bg-slate-50 border border-slate-200 bg-white px-3 h-[46px] flex items-center transition-all focus-within:border-[#238A63]"
+                class="w-full rounded-xl hover:bg-slate-50 border border-slate-200 bg-white px-3 min-h-[52px] py-2 flex items-center transition-all focus-within:border-[#219653]"
               >
                 <img
+                  v-if="!taskForm.assignee_id.length"
                   src="/icons/taskModal/responsible.svg"
                   alt="assignee"
-                  class="w-5 h-5 ml-2 grayscale opacity-60 pointer-events-none"
+                  class="w-5 h-5 ml-2 grayscale opacity-60 pointer-events-none flex-shrink-0"
                 />
 
-                <!-- دراپ‌داون -->
                 <div v-click-outside="closeAssigneeDropdown" class="w-full">
                   <button
                     type="button"
                     @click="isAssigneeOpen = !isAssigneeOpen"
-                    class="w-full text-right text-sm text-slate-800"
+                    class="w-full text-right"
                   >
-                    <span v-if="!taskForm.assignee_id.length"
+                    <span
+                      v-if="!taskForm.assignee_id.length"
+                      class="text-sm text-slate-800"
                       >انتخاب مسئول</span
                     >
-                    <div v-else class="flex flex-wrap gap-1">
-                      <span
+                    <div v-else class="flex flex-wrap gap-1.5">
+                      <div
                         v-for="id in taskForm.assignee_id"
                         :key="id"
-                        class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-md"
+                        class="w-7 h-7 rounded-full bg-[#219653] text-white flex items-center justify-center text-xs font-bold"
+                        :title="userList.find((u) => u.id === id)?.username"
                       >
-                        {{ userList.find((u) => u.id === id)?.username }}
-                      </span>
+                        {{
+                          (userList.find((u) => u.id === id)?.username || "?")
+                            .charAt(0)
+                            .toUpperCase()
+                        }}
+                      </div>
                     </div>
                   </button>
 
-                  <!-- اینجا دراپ‌داون باید مطلق باشد اما عرضش محدود به والدِ مستقیمش نباشد -->
                   <div
                     v-if="isAssigneeOpen"
-                    class="absolute z-[9999] left-0 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto p-1"
+                    class="absolute z-[9999] left-0 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto p-1.5 dropdown-scroll"
                   >
                     <div
                       v-for="user in userList"
                       :key="user.id"
                       @click.stop="toggleAssignee(user.id)"
                       :class="[
-                        'flex items-center w-full px-3 py-2 cursor-pointer text-sm rounded-lg transition-all',
+                        'flex items-center justify-between w-full my-1 gap-1 cursor-pointer text-sm rounded-lg transition-all',
                         taskForm.assignee_id.includes(user.id)
-                          ? 'bg-green-600 text-white'
+                          ? 'bg-[#cacaca] text-white'
                           : 'hover:bg-slate-50 text-slate-700',
                       ]"
                     >
-                      <span>{{ user.username }}</span>
+                      <div class="flex items-center gap-2">
+                        <div
+                          class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                          :class="
+                            taskForm.assignee_id.includes(user.id)
+                              ? 'bg-white/20 text-white'
+                              : 'bg-slate-200 text-slate-600'
+                          "
+                        >
+                          {{ user.username.charAt(0).toUpperCase() }}
+                        </div>
+                        <span>{{ user.username }}</span>
+                      </div>
+                      <button
+                        v-if="taskForm.assignee_id.includes(user.id)"
+                        type="button"
+                        @click.stop="removeAssignee(user.id)"
+                        class="w-5 h-5 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path d="M6 18L18 6M6 6l12 12" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
+              <span
+                v-if="assigneeError"
+                class="text-xs text-red-500 mt-1 block"
+              >
+                {{ assigneeError }}
+              </span>
             </div>
 
             <!-- Reminder -->
@@ -219,10 +252,7 @@
                   :key="s.id"
                   class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition group"
                 >
-                  <input
-                    type="checkbox"
-                    v-model="s.is_completed"
-                  />
+                  <input type="checkbox" v-model="s.is_completed" />
 
                   <input
                     v-model="s.title"
@@ -406,9 +436,9 @@ const {
   addSubtask,
   removeSubtask,
   toggleSubtask,
-//   parent_id: ,
-// project_id: ,
-// tag_ids: ,
+  //   parent_id: ,
+  // project_id: ,
+  // tag_ids: ,
 
   submit,
 } = useTaskForm({
@@ -418,9 +448,11 @@ const {
 });
 
 const userList = [
-  { id: 1, username: "admin", role: "admin" },
-  { id: 2, username: "manager", role: "manager" },
-  { id: 3, username: "usertest", role: "user" },
+  { id: 1, username: "naz", role: "admin" },
+  { id: 4, username: "mamad", role: "user" },
+  { id: 5, username: "mina", role: "user" },
+  { id: 2, username: "goli", role: "manager" },
+  { id: 3, username: "sara", role: "user" },
 ];
 
 /* Ensure subtasks exists */
@@ -442,6 +474,13 @@ const toggleAssignee = (id: number) => {
   } else {
     taskForm.value.assignee_id.push(id);
   }
+  isAssigneeOpen.value = false;
+};
+
+const removeAssignee = (id: number) => {
+  taskForm.value.assignee_id = taskForm.value.assignee_id.filter(
+    (i: number) => i !== id,
+  );
 };
 
 const handleFileUpload = (event: Event) => {
@@ -476,7 +515,7 @@ const openDatePicker = (event: MouseEvent) => {
 };
 
 const handleDateSelect = (value: string) => {
-  taskForm.value.due_date= value;
+  taskForm.value.due_date = value;
   closeDatePicker();
 };
 
@@ -512,13 +551,12 @@ onUnmounted(() => toggleScroll(false));
 const handleSubmit = async () => {
   const files = attachmentsLocal.value
     .filter((a: any) => a.file)
-    .map((a: any) => a.file) as File[]
-  const result = await submit(files.length > 0 ? files : undefined)
+    .map((a: any) => a.file) as File[];
+  const result = await submit(files.length > 0 ? files : undefined);
   if (result.ok) {
-    emit("close")
+    emit("close");
   }
-}
-
+};
 
 const handleCancel = () => {
   if (isSubmitting.value) return;
@@ -535,6 +573,32 @@ const submitButtonText = computed(() =>
 </script>
 
 <style scoped>
+.dropdown-scroll {
+  direction: ltr;
+}
+
+.dropdown-scroll > * {
+  direction: rtl;
+}
+
+.dropdown-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dropdown-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.dropdown-scroll::-webkit-scrollbar-thumb {
+  background: #219653;
+  border-radius: 10px;
+}
+
+.dropdown-scroll::-webkit-scrollbar-thumb:hover {
+  background: #1d854a;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
 }

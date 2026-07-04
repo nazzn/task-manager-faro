@@ -63,7 +63,7 @@
           ref="scrollContainer"
           class="absolute inset-0 overflow-y-auto py-2 scroll-right"
         >
-          <div class="divide-y divide-slate-100 rounded-xl pb-4 content-rtl">
+          <div class="divide-y divide-slate-100 rounded-xl pb-4  content-rtl">
             <div
               v-for="(task, index) in paginatedTasks"
               :key="task.id"
@@ -75,12 +75,10 @@
                 'opacity-50 scale-95':
                   isLastTaskPartiallyVisible &&
                   index === paginatedTasks.length - 1,
-                'task-selected': taskStore.selectedTask?.id === task.id,
-              }"
-            >
+                'task-selected': taskStore.selectedTask?.id === task.id,}">
               <!-- Title -->
               <div class="col-span-5">
-                <div class="flex items-start gap-3">
+                <div class="flex items-start gap-1">
                   <input
                     type="checkbox"
                     class="mt-1 w-4 h-4 rounded border border-[#B7D8C6] cursor-pointer accent-[#219653]"
@@ -206,27 +204,29 @@
         ></div>
 
         <!-- ===== نشانگر فلش در پایین ===== -->
-        <div
-          v-if="hasMoreTasks && !isLoadingMore"
-          class="absolute bottom-2 left-1/2 transform -translate-x-1/2 pointer-events-none animate-bounce"
-        >
-          <div class="bg-[#219653] text-white rounded-full p-2 shadow-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
-            </svg>
-          </div>
-        </div>
+        <button
+  v-if="hasMoreTasks && !isLoadingMore"
+  @click="scrollToLastTask"
+  class="absolute bottom-2 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-10"
+  title="رفتن به آخرین تسک"
+>
+  <div class="bg-[#219653] text-white rounded-full p-2 shadow-lg hover:bg-[#1d854a] transition-colors">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-5 h-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 14l-7 7m0 0l-7-7m7 7V3"
+      />
+    </svg>
+  </div>
+</button>
       </div>
     </section>
 
@@ -538,6 +538,16 @@ const openTaskDetail = async (taskId: number) => {
     showToast("خطا در دریافت جزئیات وظیفه");
   }
 };
+const scrollToLastTask = () => {
+  if (!scrollContainer.value) return
+
+  const tasks = scrollContainer.value.querySelectorAll('.task-row')
+  const lastTask = tasks[tasks.length - 1] as HTMLElement
+
+  if (lastTask) {
+    lastTask.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+} 
 </script>
 
 <style scoped>

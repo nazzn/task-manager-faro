@@ -68,14 +68,14 @@
           <!-- META ROW -->
           <div class="flex flex-wrap items-start gap-4">
             <!-- Assignee -->
-            <div class="w-[143px]">
+            <div class="min-w-[220px] flex-1">
               <div
                 class="rounded-xl border border-slate-200 bg-white px-3 h-[46px] flex items-center transition-all focus-within:border-[#238A63]"
               >
                 <img
                   src="/icons/taskModal/responsible.svg"
                   alt="assignee"
-                  class="w-5 h-5 ml-2 grayscale opacity-60 pointer-events-none"
+                  class="w-5 h-5 ml-2 grayscale opacity-60 pointer-events-none flex-shrink-0"
                 />
                 <select
                   v-model="taskForm.assignee_id"
@@ -118,9 +118,11 @@
                         src="/icons/taskModal/Calendar.svg"
                         alt="calendar"
                         class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
-                      /> <div
+                      />
+                      <div
                         class="text-sm truncate w-full"
-                        :class="value ? 'text-slate-700' : 'text-slate-400'">
+                        :class="value ? 'text-slate-700' : 'text-slate-400'"
+                      >
                         {{ value || "تاریخ" }}
                       </div>
                     </div>
@@ -220,10 +222,7 @@
                   :key="s.id"
                   class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition group"
                 >
-                  <input
-                    type="checkbox"
-                    v-model="s.is_completed"
-                  />
+                  <input type="checkbox" v-model="s.is_completed" />
                   <input
                     v-model="s.title"
                     type="text"
@@ -337,6 +336,28 @@
             class="text-sm text-red-600 bg-red-50 p-3 rounded-xl"
           >
             {{ errorMessage }}
+          </div>
+          <!-- بخش گزارش‌ها — فقط در ویرایش نمایش داده می‌شه -->
+          <div
+            v-if="props.taskToEdit?.id"
+            class="space-y-3 border-t border-slate-100 pt-6"
+          >
+            <h3 class="font-bold text-slate-700 flex items-center gap-2">
+              <svg
+                class="w-4 h-4 text-[#238A63]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              گزارش‌ها
+            </h3>
+            <TaskComments :task-id="props.taskToEdit.id" />
           </div>
         </form>
       </div>
@@ -452,9 +473,13 @@ const handleClickOutside = (event: MouseEvent) => {
 // ========== Subtasks visibility ==========
 const showSubtasks = ref(false);
 
-watch(() => taskForm.value.subtasks.length, (len) => {
-  if (len > 0) showSubtasks.value = true
-}, { immediate: true })
+watch(
+  () => taskForm.value.subtasks.length,
+  (len) => {
+    if (len > 0) showSubtasks.value = true;
+  },
+  { immediate: true },
+);
 
 const toggleSubtasks = () => {
   showSubtasks.value = !showSubtasks.value;
@@ -497,18 +522,19 @@ onUnmounted(() => toggleScroll(false));
 
 // ========== Submit handler ==========
 const handleSubmit = async () => {
-  taskForm.value.subtasks =
-    taskForm.value.subtasks.filter((s) => s.title.trim())
+  taskForm.value.subtasks = taskForm.value.subtasks.filter((s) =>
+    s.title.trim(),
+  );
 
   const files = attachmentsLocal.value
     .filter((a: any) => a.file)
-    .map((a: any) => a.file) as File[]
-  const result = await submit(files.length > 0 ? files : undefined)
+    .map((a: any) => a.file) as File[];
+  const result = await submit(files.length > 0 ? files : undefined);
 
   if (result.ok) {
-    emit("close")
+    emit("close");
   }
-}
+};
 
 const handleCancel = () => {
   if (isSubmitting.value) return;
