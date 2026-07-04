@@ -15,13 +15,13 @@
 
     <!-- Modal -->
     <section
-      class="relative w-full max-w-[750px] max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-900/10 flex flex-col"
+      class="relative w-full max-w-[750px] max-h-[95vh] overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-900/10 flex flex-col"
       role="dialog"
       aria-modal="true"
     >
       <!-- Header شیشه‌ای با دکمه‌های ویرایش/حذف -->
       <header
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-50 bg-white/50 backdrop-blur-md"
+        class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white"
       >
         <h2 class="text-xl font-extrabold text-slate-800">جزئیات وظیفه</h2>
         <div class="flex items-center gap-2">
@@ -379,7 +379,7 @@ const statusLabel = computed(() => {
   const s = localTask.value.status;
   if (s === "todo") return "برای انجام  ";
   if (s === "doing") return "در حال انجام";
-  if (s === "review") return "در انتظار بازبینی";
+
   if (s === "done") return "تکمیل شده";
   return s || "نامشخص";
 });

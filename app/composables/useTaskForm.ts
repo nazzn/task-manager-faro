@@ -53,7 +53,7 @@ function createDefaultForm(): TaskForm {
     start_at: null,
     due_date: null,
     priority: "low",
-    status: "doing",
+    status: "todo",
     subtasks: [],
     attachments: [],
   };
@@ -271,17 +271,18 @@ export function useTaskForm(options: UseTaskFormOptions = {}) {
 
   function handleApiError(err: any) {
     if (err.statusCode === 422 || err.response?.status === 422) {
-      const errors = err.data?.errors || err.response?.data?.errors || {};
+      const nested = err.data?.data;
+      const errors = nested?.errors || err.data?.errors || err.response?.data?.errors || {};
 
       titleError.value = errors.title?.[0] || "";
       descriptionError.value = errors.description?.[0] || "";
       assigneeError.value = errors.assignee_id?.[0] || "";
-      endDateError.value = errors.end_at?.[0] || "";
+      endDateError.value = errors.due_date?.[0] || errors.end_at?.[0] || "";
       statusError.value = errors.status?.[0] || "";
       subtasksError.value = errors.subtasks?.[0] || "";
 
       errorMessage.value =
-        err.data?.message || err.response?.data?.message || "";
+        nested?.message || err.data?.message || err.response?.data?.message || "";
     } else {
       errorMessage.value =
         err?.data?.message ||

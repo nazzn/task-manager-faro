@@ -494,7 +494,7 @@ const toggleTaskStatus = async (task: Task) => {
   } catch (error: any) {
     if (error.statusCode === 422 || error.response?.status === 422) {
       showToast(
-        "❌ تغییر وضعیت مجاز نیست. ترتیب تغییرات: todo → doing → review → done",
+        "❌ تغییر وضعیت مجاز نیست. ترتیب تغییرات: todo → doing → done",
       );
     } else {
       showToast("خطایی رخ داد. لطفاً دوباره تلاش کنید");
@@ -510,7 +510,7 @@ const formatDate = (date?: string | null) => {
 const statusLabel = (s: Task["status"]) => {
     if (s === "todo") return "برای انجام";
   if (s === "doing") return "در حال انجام";
-  if (s === "review") return "در انتظار بازبینی";
+
   if (s === "done") return "تکمیل شده";
   return "نامشخص";
 };
@@ -518,7 +518,7 @@ const statusLabel = (s: Task["status"]) => {
 const statusBadgeClass = (s: Task["status"]) => {
   if (s === "done") return "bg-emerald-50 text-emerald-700 border-emerald-100";
   if (s === "doing") return "bg-blue-50 text-blue-700 border-blue-100";
-  if (s === "review") return "bg-amber-50 text-amber-700 border-amber-100";
+
   return "bg-slate-50 text-slate-700 border-slate-200";
 };
 

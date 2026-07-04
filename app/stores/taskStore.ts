@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { taskService } from "~/services/taskService";
 
-export type TaskStatus = "todo" | "doing" | "review" | "done";
+export type TaskStatus = "todo" | "doing" | "done";
 export type StatusFilter = TaskStatus | null;
 
 export type Subtask = {
@@ -72,7 +72,7 @@ export interface Task {
 export const statusTabs: { label: string; value: TaskStatus; icon: any }[] = [
   { label: "برای انجام", value: "todo", icon: "status.svg" },
   { label: "در حال انجام", value: "doing", icon: "status.svg" },
-  { label: "در انتظار بازبینی", value: "review", icon: "status.svg" },
+
   { label: "تکمیل شده", value: "done", icon: "status.svg" },
 ];
 
@@ -111,7 +111,7 @@ export const useTaskStore = defineStore("taskStore", {
       const counts: Record<TaskStatus, number> = {
         todo: 0,
         doing: 0,
-        review: 0,
+
         done: 0,
       };
       state.tasks.forEach((task) => {

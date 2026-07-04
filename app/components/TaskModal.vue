@@ -14,13 +14,13 @@
     />
 
     <section
-      class="relative w-full max-w-[750px] max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-900/10 flex flex-col"
+      class="relative w-full max-w-[750px] max-h-[95vh] overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-900/10 flex flex-col"
       role="dialog"
       aria-modal="true"
     >
       <!-- Header -->
       <header
-        class="flex items-center justify-between px-6 py-4 border-b border-slate-50 bg-white/50 backdrop-blur-md"
+        class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white"
       >
         <h2 class="text-xl font-extrabold text-slate-800">{{ modalTitle }}</h2>
         <button
@@ -136,8 +136,18 @@
                         @click.stop="removeAssignee(user.id)"
                         class="w-5 h-5 flex items-center justify-center text-white/70 hover:text-white transition-colors"
                       >
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path d="M6 18L18 6M6 6l12 12" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <svg
+                          class="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M6 18L18 6M6 6l12 12"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -190,25 +200,49 @@
               </span>
             </div>
             <!-- Status -->
-            <div
-              class="w-[143px] relative hover:bg-slate-50 cursor-pointer flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 transition-all focus-within:border-[#238A63]"
-            >
-              <!-- آیکون وضعیت از public -->
-              <img
-                src="/icons/taskModal/Label.svg"
-                alt="status"
-                class="w-5 h-5 ml-2 grayscale opacity-60"
-              />
-
-              <select
-                v-model="taskForm.status"
-                class="w-full text-sm outline-none focus:ring-0 appearance-none cursor-pointer hover:bg-slate-50"
+            <div class="w-[143px] relative">
+              <div
+                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
+                v-click-outside="closeStatusDropdown"
               >
-                <option value="todo">همه</option>
-                <option value="doing" class="border-none">در حال انجام</option>
-                <option value="review">در انتظار بازبینی</option>
-                <option value="done">تکمیل شده</option>
-              </select>
+                <img
+                  src="/icons/taskModal/Label.svg"
+                  alt="status"
+                  class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
+                />
+
+                <button
+                  type="button"
+                  @click="isStatusOpen = !isStatusOpen"
+                  class="w-full text-right text-sm text-slate-700"
+                >
+                  <span class="truncate">{{
+                    statusLabel(taskForm.status)
+                  }}</span>
+                </button>
+              </div>
+
+              <div
+                v-if="isStatusOpen"
+                class="absolute z-[9999] left-0 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden"
+              >
+                <div
+                  v-for="st in statuses"
+                  :key="st.value"
+                  @click="
+                    taskForm.status = st.value;
+                    isStatusOpen = false;
+                  "
+                  :class="[
+                    'flex items-center w-full px-3 py-2.5 cursor-pointer text-sm transition-all',
+                    taskForm.status === st.value
+                      ? 'bg-[#219653] text-white'
+                      : 'hover:bg-slate-50 text-slate-700',
+                  ]"
+                >
+                  <span>{{ st.label }}</span>
+                </div>
+              </div>
               <span v-if="statusError" class="text-xs text-red-500 mt-1 block">
                 {{ statusError }}
               </span>
@@ -240,7 +274,7 @@
                 <button
                   type="button"
                   @click="addSubtask()"
-                  class="text-xs font-bold text-[#238A63] hover:text-[#1b6d4e]"
+                  class="text-xl font-bold text-[#238A63] hover:text-[#1b6d4e]"
                 >
                   +
                 </button>
@@ -314,49 +348,56 @@
               />
             </div>
 
-            <div
-              v-if="attachmentsLocal.length"
-              class="grid grid-cols-2 gap-3 sm:grid-cols-3"
-            >
+            <div v-if="attachmentsLocal.length" class="space-y-2">
               <div
                 v-for="(att, idx) in attachmentsLocal"
                 :key="idx"
-                class="group relative flex flex-col rounded-xl border border-slate-100 bg-slate-50 p-2.5"
+                class="group relative w-[40%] flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5"
               >
-                <div class="flex items-center justify-between mb-1">
+                <span class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600">
+                  {{ getFileExtension(att.name) }}
+                </span>
+                <span
+                  class="flex-1 truncate text-xs font-semibold text-slate-700"
+                  :title="att.name"
+                  >{{ att.name }}</span
+                >
+                <span class="flex-shrink-0 text-[10px] text-slate-400">{{
+                  formatFileSize(att.size)
+                }}</span>
+                <a
+                  v-if="att.id"
+                  :href="att.url || `/api/attachments/${att.id}/download`"
+                  download
+                  class="flex-shrink-0 p-1 text-slate-400 hover:text-[#219653] transition-colors"
+                  title="دانلود"
+                >
                   <svg
-                    class="h-5 w-5 text-slate-400"
+                    class="w-4 h-4"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M15.172 7l-2.828-2.828a4 4 0 00-5.656 0L4.93 6.828a4 4 0 000 5.656l4.242 4.242a4 4 0 005.656 0l2.828-2.828M9 15l6-6"
-                      stroke-width="1.5"
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      stroke-width="2"
                     />
                   </svg>
-                  <button
-                    @click="removeAttachment(idx)"
-                    class="text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-600"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M6 18L18 6M6 6l12 12" stroke-width="2" />
-                    </svg>
-                  </button>
-                </div>
-                <span
-                  class="truncate text-xs font-semibold text-slate-700"
-                  :title="att.name"
-                  >{{ att.name }}</span
+                </a>
+                <button
+                  @click="removeAttachment(idx)"
+                  class="flex-shrink-0 p-1 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-600"
+                  title="حذف"
                 >
-                <span class="text-[10px] text-slate-400 uppercase">{{
-                  formatFileSize(att.size)
-                }}</span>
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M6 18L18 6M6 6l12 12" stroke-width="2" />
+                  </svg>
+                </button>
               </div>
             </div>
             <div v-else class="text-xs text-slate-400">
@@ -374,11 +415,11 @@
 
       <!-- Footer -->
       <footer
-        class="p-6 bg-slate-50/80 border-t border-slate-100 flex flex-col-reverse sm:flex-row gap-3 justify-center"
+        class="p-6 bg-slate-50/80 border-t  flex flex-col-reverse sm:flex-row gap-3 justify-center"
       >
         <button
           type="button"
-          class="px-8 py-3 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-colors"
+          class="px-8 py-3 rounded-xl text-sm font-bold bg-[#F3F4F6] text-slate-500 hover:bg-slate-200 transition-colors"
           @click="handleCancel"
         >
           انصراف
@@ -398,7 +439,7 @@
 
 <script setup lang="ts">
 import { computed, toRef, ref, onMounted, onUnmounted } from "vue";
-import type { Task, Subtask } from "~/stores/taskStore";
+import type { Task, Subtask, TaskStatus } from "~/stores/taskStore";
 import { useTaskForm } from "~/composables/useTaskForm";
 
 const isDatePickerOpen = ref(false);
@@ -406,10 +447,24 @@ const tempDateValue = ref<string | null>(null);
 const datePickerRef = ref(null);
 const datePickerPanel = ref<HTMLElement | null>(null);
 const isAssigneeOpen = ref(false);
+const isStatusOpen = ref(false);
 
 const closeAssigneeDropdown = () => {
   isAssigneeOpen.value = false;
 };
+
+const closeStatusDropdown = () => {
+  isStatusOpen.value = false;
+};
+
+const statuses: { value: TaskStatus; label: string }[] = [
+  { value: "todo", label: "برای انجام" },
+  { value: "doing", label: "در حال انجام" },
+  { value: "done", label: "تکمیل شده" },
+];
+
+const statusLabel = (s: TaskStatus) =>
+  statuses.find((st) => st.value === s)?.label || s;
 
 /* Props */
 const props = defineProps<{
@@ -497,6 +552,11 @@ const handleFileUpload = (event: Event) => {
 };
 
 const removeAttachment = (idx: number) => attachmentsLocal.value.splice(idx, 1);
+
+const getFileExtension = (name: string) => {
+  const parts = name?.split(".") ?? [];
+  return parts.length > 1 ? parts.pop()!.toUpperCase() : "FILE";
+};
 
 const formatFileSize = (bytes: number) => {
   if (!bytes) return "0 KB";
@@ -599,15 +659,28 @@ const submitButtonText = computed(() =>
   background: #1d854a;
 }
 
+.custom-scrollbar {
+  direction: ltr;
+  scrollbar-width: thin;
+  scrollbar-color: #219653 #f1f1f1;
+}
+.custom-scrollbar > * {
+  direction: rtl;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f1f1;
+  border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: #219653;
   border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1d854a;
 }
 .fade-enter-active,
 .fade-leave-active {
