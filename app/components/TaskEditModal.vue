@@ -47,7 +47,7 @@
       <div class="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
         <form
           id="editTaskForm"
-          class="space-y-8"
+          class="space-y-"
           @submit.prevent="handleSubmit"
         >
           <!-- Task Title -->
@@ -67,104 +67,11 @@
 
           <!-- META ROW -->
           <div class="flex flex-wrap items-start gap-4">
-            <!-- Assignee -->
-            <div class="w-[143px] relative">
-              <div
-                class="w-full rounded-xl hover:bg-slate-50 border border-slate-200 bg-white px-3 min-h-[52px] py-2 flex items-center transition-all focus-within:border-[#219653]"
-              >
-                <img
-                  v-if="!taskForm.assignee_id.length"
-                  src="/icons/taskModal/responsible.svg"
-                  alt="assignee"
-                  class="w-5 h-5 ml-2 grayscale opacity-60 pointer-events-none flex-shrink-0"
-                />
-
-                <div v-click-outside="closeAssigneeDropdown" class="w-full">
-                  <button
-                    type="button"
-                    @click="isAssigneeOpen = !isAssigneeOpen"
-                    class="w-full text-right"
-                  >
-                    <span
-                      v-if="!taskForm.assignee_id.length"
-                      class="text-sm text-slate-800"
-                      >انتخاب مسئول</span
-                    >
-                    <div v-else class="flex flex-wrap gap-1.5">
-                      <div
-                        v-for="id in taskForm.assignee_id"
-                        :key="id"
-                        class="w-7 h-7 rounded-full bg-[#219653] text-white flex items-center justify-center text-xs font-bold"
-                        :title="userList.find((u) => u.id === id)?.username"
-                      >
-                        {{
-                          (userList.find((u) => u.id === id)?.username || "?")
-                            .charAt(0)
-                            .toUpperCase()
-                        }}
-                      </div>
-                    </div>
-                  </button>
-
-                  <div
-                    v-if="isAssigneeOpen"
-                    class="absolute z-[9999] left-0 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto p-1.5 dropdown-scroll"
-                  >
-                    <div
-                      v-for="user in userList"
-                      :key="user.id"
-                      @click.stop="toggleAssignee(user.id)"
-                      :class="[
-                        'flex items-center justify-between w-full my-1 gap-1 cursor-pointer text-sm rounded-lg transition-all',
-                        taskForm.assignee_id.includes(user.id)
-                          ? 'bg-[#cacaca] text-white'
-                          : 'hover:bg-slate-50 text-slate-700',
-                      ]"
-                    >
-                      <div class="flex items-center gap-2">
-                        <div
-                          class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                          :class="
-                            taskForm.assignee_id.includes(user.id)
-                              ? 'bg-white/20 text-white'
-                              : 'bg-slate-200 text-slate-600'
-                          "
-                        >
-                          {{ user.username.charAt(0).toUpperCase() }}
-                        </div>
-                        <span>{{ user.username }}</span>
-                      </div>
-                      <button
-                        v-if="taskForm.assignee_id.includes(user.id)"
-                        type="button"
-                        @click.stop="removeAssignee(user.id)"
-                        class="w-5 h-5 flex items-center justify-center text-white/70 hover:text-white transition-colors"
-                      >
-                        <svg
-                          class="w-3.5 h-3.5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M6 18L18 6M6 6l12 12"
-                            stroke-width="2.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <span
-                v-if="assigneeError"
-                class="text-xs text-red-500 mt-1 block"
-              >
-                {{ assigneeError }}
-              </span>
-            </div>
+            <AssigneeSelector
+              v-model="taskForm.assignee_id"
+              :users="userList"
+              :error="assigneeError"
+            />
 
             <!-- Deadline -->
             <div class="w-[143px] relative border rounded-xl p-2">
@@ -255,6 +162,9 @@
               class="text-xs text-amber-600 mt-1 block"
               >{{ statusRestrictionMsg }}</span
             >
+
+            <!-- Tags -->
+            <TagSelector v-model="taskForm.tag_ids" />
 
             <!-- Checklist Toggle -->
             <button
@@ -493,7 +403,7 @@ import { toRef, computed, ref, watch, onMounted, onUnmounted } from "vue";
 import type { Task, TaskStatus } from "~/stores/taskStore";
 import { useTaskForm } from "~/composables/useTaskForm";
 import { useRole } from "~/composables/useRole";
-import { USERS } from "~/composables/useUsers";
+const { USERS } = useUsers();
 
 const props = defineProps<{
   taskToEdit: Task;
@@ -505,29 +415,6 @@ const emit = defineEmits<{
 }>();
 
 const userList = USERS;
-
-const isAssigneeOpen = ref(false);
-
-const closeAssigneeDropdown = () => {
-  isAssigneeOpen.value = false;
-};
-
-const toggleAssignee = (id: number) => {
-  if (taskForm.value.assignee_id.includes(id)) {
-    taskForm.value.assignee_id = taskForm.value.assignee_id.filter(
-      (i: number) => i !== id,
-    );
-  } else {
-    taskForm.value.assignee_id.push(id);
-  }
-  isAssigneeOpen.value = false;
-};
-
-const removeAssignee = (id: number) => {
-  taskForm.value.assignee_id = taskForm.value.assignee_id.filter(
-    (i: number) => i !== id,
-  );
-};
 
 const isStatusOpen = ref(false);
 

@@ -51,7 +51,17 @@ async deleteAttachment(attachmentId: number) {
   return request(`/api/attachments/${attachmentId}`, { method: 'DELETE' })
 },
 
-async getComments(taskId: number) {
+async getTags() {
+    const { request } = useApi()
+    return request('/api/tags', { method: 'GET' })
+  },
+
+  async createTag(payload: { name: string; color?: string }) {
+    const { request } = useApi()
+    return request('/api/tags', { method: 'POST', body: payload })
+  },
+
+  async getComments(taskId: number) {
   const { request } = useApi()
   return request(`/api/tasks/${taskId}/comments`, { method: 'GET' })
 },

@@ -1,14 +1,47 @@
-// composables/useUsers.ts
-export const USERS = [
-  { id: 1, username: "naz", role: "admin" },
-  { id: 4, username: "mamad", role: "user" },
-  { id: 5, username: "mina", role: "user" },
-  { id: 2, username: "goli", role: "manager" },
-  { id: 3, username: "sara", role: "user" },
-]
+import { ref } from "vue"
+
+type User = { id: number; username: string; role: string }
+
+const USERS = ref<User[]>([])
+let fetched = false
+
+function normalizeUsers(data: any): User[] {
+  if (!data) return []
+
+  let list: any[] = []
+
+  if (Array.isArray(data)) {
+    list = data
+  } else if (data.data && Array.isArray(data.data)) {
+    list = data.data
+  } else if (data.users && Array.isArray(data.users)) {
+    list = data.users
+  }
+
+  return list.map((u: any) => ({
+    id: typeof u.id === "string" ? parseInt(u.id, 10) : u.id,
+    username: u.username ?? "",
+    role: u.role ?? "user",
+  }))
+}
+
+export async function fetchUsers() {
+  if (fetched) return
+  fetched = true
+  try {
+    const data = await $fetch("/api/users")
+    USERS.value = normalizeUsers(data)
+  } catch {
+    USERS.value = []
+  }
+}
+
+if (import.meta.client) {
+  fetchUsers()
+}
 
 export function getUserById(id: number) {
-  return USERS.find(u => u.id === id)
+  return USERS.value.find((u) => u.id === id) ?? null
 }
 
 export function getUserName(id: number) {
@@ -20,5 +53,5 @@ export function getUserInitial(id: number) {
 }
 
 export const useUsers = () => {
-  return { USERS, getUserById, getUserName, getUserInitial }
+  return { USERS, getUserById, getUserName, getUserInitial, fetchUsers }
 }

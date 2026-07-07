@@ -85,28 +85,13 @@
 
           <!-- ردیف متا (مسئول، مهلت، وضعیت، چک‌لیست) -->
           <div class="flex flex-wrap items-start gap-4">
-            <!-- مسئول -->
             <div class="w-[143px]">
               <div
                 class="rounded-xl border border-slate-200 bg-white px-3 min-h-[46px] py-2 flex items-center"
               >
-                <img
-                  v-if="!localTask.assignee"
-                  src="/icons/taskModal/responsible.svg"
-                  alt="assignee"
-                  class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
+                <AssigneeBadge
+                  :user="getUserById(localTask.assignee_id)"
                 />
-                <div v-if="localTask.assignee" class="flex flex-wrap gap-1.5">
-                  <div
-                    class="w-7 h-7 rounded-full bg-[#219653] text-white flex items-center justify-center text-xs font-bold"
-                    :title="localTask.assignee.username"
-                  >
-                    {{ localTask.assignee.username.charAt(0).toUpperCase() }}
-                  </div>
-                </div>
-                <span v-else class="text-sm text-slate-400"
-                  >تعیین نشده</span
-                >
               </div>
             </div>
 
@@ -330,8 +315,7 @@
 import { computed, ref, onMounted } from "vue";
 import type { Task } from "~/stores/taskStore";
 import { useTaskStore } from "~/stores/taskStore";
-import { USERS } from "~/composables/useUsers";
-
+import { getUserById } from "~/composables/useUsers";
 const props = defineProps<{
   task: Task;
   canEdit?: boolean;
@@ -343,8 +327,6 @@ const emit = defineEmits<{
   (e: "edit", task: Task): void;
   (e: "delete", id: number): void;
 }>();
-
-const userList = USERS;
 
 const taskStore = useTaskStore();
 

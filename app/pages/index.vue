@@ -98,17 +98,13 @@
                 </div>
               </div>
 
-              <!-- Assignee -->
-              <div class="col-span-3 flex items-center justify-center gap-3">
-                <div
-                  class="w-8 h-8 rounded-full bg-[#DDF1E5] text-[#219653] text-xs font-bold flex items-center justify-center"
-                >
-                  {{ (task.assignee?.username || getUserById(task.assignee_id)?.username || "?")?.charAt(0)?.toUpperCase() }}
-                </div>
-                <span class="text-sm text-slate-700 font-medium">
-                  {{ task.assignee?.username || getUserById(task.assignee_id)?.username || "-" }}
-                </span>
-              </div>
+              <AssigneeBadge
+                :user="getUserById(task.assignee_id)"
+                :showName="true"
+                size="sm"
+                variant="light"
+                class="col-span-3 flex items-center justify-center gap-3"
+              />
 
               <!-- Date -->
               <div class="col-span-2 text-center text-sm text-slate-600">

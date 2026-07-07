@@ -25,3 +25,7 @@ body {
   margin: 0 auto;
   padding: 0;
 }
+/* *, ::before, ::after {
+  --tw-space-y-reverse: unset !important;
+  --tw-space-x-reverse: unset !important;
+} */
