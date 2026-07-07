@@ -296,6 +296,7 @@
                   />
 
                   <button
+                    type="button"
                     @click="removeSubtask(s.id)"
                     class="opacity-0 group-hover:opacity-100 transition text-red-500 hover:text-red-700"
                   >
@@ -441,6 +442,10 @@
 import { computed, toRef, ref, onMounted, onUnmounted } from "vue";
 import type { Task, Subtask, TaskStatus } from "~/stores/taskStore";
 import { useTaskForm } from "~/composables/useTaskForm";
+import { useRole } from "~/composables/useRole";
+import { USERS } from "~/composables/useUsers";
+
+const { canCreateTask } = useRole();
 
 const isDatePickerOpen = ref(false);
 const tempDateValue = ref<string | null>(null);
@@ -502,13 +507,7 @@ const {
   // emitSave: (task) => emit("save", task),
 });
 
-const userList = [
-  { id: 1, username: "naz", role: "admin" },
-  { id: 4, username: "mamad", role: "user" },
-  { id: 5, username: "mina", role: "user" },
-  { id: 2, username: "goli", role: "manager" },
-  { id: 3, username: "sara", role: "user" },
-];
+const userList = USERS;
 
 /* Ensure subtasks exists */
 if (!taskForm.value.subtasks) taskForm.value.subtasks = [];
@@ -609,6 +608,11 @@ onUnmounted(() => toggleScroll(false));
 
 /* Submit */
 const handleSubmit = async () => {
+  if (!canCreateTask.value) {
+    emit("close");
+    return
+  }
+
   const files = attachmentsLocal.value
     .filter((a: any) => a.file)
     .map((a: any) => a.file) as File[];

@@ -34,12 +34,17 @@ function newSubtask(order: number): Subtask {
 }
 
 function normalizeAssigneeId(value: unknown): number[] {
+  if (value == null) return [];
+
   if (Array.isArray(value)) {
-    return value.filter((item): item is number => typeof item === "number");
+    return value
+      .map((item) => Number(item))
+      .filter((item): item is number => !isNaN(item) && item > 0);
   }
 
-  if (typeof value === "number") {
-    return [value];
+  const num = Number(value);
+  if (!isNaN(num) && num > 0) {
+    return [num];
   }
 
   return [];
@@ -270,7 +275,7 @@ export function useTaskForm(options: UseTaskFormOptions = {}) {
   }
 
   function handleApiError(err: any) {
-    if (err.statusCode === 422 || err.response?.status === 422) {
+    if (err.status === 422 || err.statusCode === 422 || err.response?.status === 422) {
       const nested = err.data?.data;
       const errors = nested?.errors || err.data?.errors || err.response?.data?.errors || {};
 

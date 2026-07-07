@@ -5,6 +5,7 @@
     <div class="flex items-start gap-6 flex-col">
       <div class="flex items-center gap-4">
         <button
+          v-if="canCreateTask"
           @click="openCreate"
           class="h-10 px-4 rounded-xl bg-[#219653] text-white text-sm font-semibold hover:bg-[#1d854a] transition-all"
         >
@@ -102,10 +103,10 @@
                 <div
                   class="w-8 h-8 rounded-full bg-[#DDF1E5] text-[#219653] text-xs font-bold flex items-center justify-center"
                 >
-                  {{ task.assignee?.username?.charAt(0) || "م" }}
+                  {{ (task.assignee?.username || getUserById(task.assignee_id)?.username || "?")?.charAt(0)?.toUpperCase() }}
                 </div>
                 <span class="text-sm text-slate-700 font-medium">
-                  {{ task.assignee?.username || "-" }}
+                  {{ task.assignee?.username || getUserById(task.assignee_id)?.username || "-" }}
                 </span>
               </div>
 
@@ -232,7 +233,7 @@
 
     <!-- Modals -->
     <TaskModal
-      v-if="showCreateModal"
+      v-if="showCreateModal && canCreateTask"
       :task-to-edit="null"
       :on-save="handleSave"
       @close="closeCreateModal"
@@ -251,8 +252,8 @@
     <TaskDetailModal
       v-if="showDetailModal && taskStore.selectedTask"
       :task="taskStore.selectedTask"
-      :can-edit="canEdit"
-      :can-delete="canDelete"
+      :can-edit="canEditTask"
+      :can-delete="canDeleteTask"
       @close="closeTaskDetail"
       @edit="handleEditTask"
       @delete="handleDeleteTask"
@@ -278,15 +279,15 @@ import {
 } from "vue";
 import { storeToRefs } from "pinia";
 import { useTaskStore, type Task } from "~/stores/taskStore";
+import { useRole } from "~/composables/useRole";
+import { getUserById } from "~/composables/useUsers";
 import InfinityScroll from "~/components/InfinityScroll.vue";
 import TaskDetailModal from "~/components/TaskDetailModal.vue";
 import TaskEditModal from "~/components/TaskEditModal.vue";
 import TaskModal from "~/components/TaskModal.vue";
 
-const canEdit = true;
-const canDelete = true;
-
 const taskStore = useTaskStore();
+const { canCreateTask, canEditTask, canDeleteTask } = useRole();
 const { showToast } = useToast();
 
 const { filteredTasks } = storeToRefs(taskStore);
@@ -492,7 +493,7 @@ const toggleTaskStatus = async (task: Task) => {
       newStatus === "done" ? "✅ تسک تکمیل شد" : "🔄 تسک در حال انجام شد",
     );
   } catch (error: any) {
-    if (error.statusCode === 422 || error.response?.status === 422) {
+    if (error.status === 422 || error.statusCode === 422 || error.response?.status === 422) {
       showToast(
         "❌ تغییر وضعیت مجاز نیست. ترتیب تغییرات: todo → doing → done",
       );

@@ -68,34 +68,102 @@
           <!-- META ROW -->
           <div class="flex flex-wrap items-start gap-4">
             <!-- Assignee -->
-            <div class="min-w-[220px] flex-1">
+            <div class="w-[143px] relative">
               <div
-                class="rounded-xl border border-slate-200 bg-white px-3 h-[46px] flex items-center transition-all focus-within:border-[#238A63]"
+                class="w-full rounded-xl hover:bg-slate-50 border border-slate-200 bg-white px-3 min-h-[52px] py-2 flex items-center transition-all focus-within:border-[#219653]"
               >
                 <img
+                  v-if="!taskForm.assignee_id.length"
                   src="/icons/taskModal/responsible.svg"
                   alt="assignee"
                   class="w-5 h-5 ml-2 grayscale opacity-60 pointer-events-none flex-shrink-0"
                 />
-                <select
-                  v-model="taskForm.assignee_id"
-                  class="w-full text-sm text-slate-700 bg-transparent outline-none border-none p-0 appearance-none cursor-pointer"
-                >
-                  <option :value="null">انتخاب کنید</option>
-                  <option
-                    v-for="user in userList"
-                    :key="user.id"
-                    :value="user.id"
+
+                <div v-click-outside="closeAssigneeDropdown" class="w-full">
+                  <button
+                    type="button"
+                    @click="isAssigneeOpen = !isAssigneeOpen"
+                    class="w-full text-right"
                   >
-                    {{ user.username }} ({{ user.role }})
-                  </option>
-                </select>
+                    <span
+                      v-if="!taskForm.assignee_id.length"
+                      class="text-sm text-slate-800"
+                      >انتخاب مسئول</span
+                    >
+                    <div v-else class="flex flex-wrap gap-1.5">
+                      <div
+                        v-for="id in taskForm.assignee_id"
+                        :key="id"
+                        class="w-7 h-7 rounded-full bg-[#219653] text-white flex items-center justify-center text-xs font-bold"
+                        :title="userList.find((u) => u.id === id)?.username"
+                      >
+                        {{
+                          (userList.find((u) => u.id === id)?.username || "?")
+                            .charAt(0)
+                            .toUpperCase()
+                        }}
+                      </div>
+                    </div>
+                  </button>
+
+                  <div
+                    v-if="isAssigneeOpen"
+                    class="absolute z-[9999] left-0 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto p-1.5 dropdown-scroll"
+                  >
+                    <div
+                      v-for="user in userList"
+                      :key="user.id"
+                      @click.stop="toggleAssignee(user.id)"
+                      :class="[
+                        'flex items-center justify-between w-full my-1 gap-1 cursor-pointer text-sm rounded-lg transition-all',
+                        taskForm.assignee_id.includes(user.id)
+                          ? 'bg-[#cacaca] text-white'
+                          : 'hover:bg-slate-50 text-slate-700',
+                      ]"
+                    >
+                      <div class="flex items-center gap-2">
+                        <div
+                          class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                          :class="
+                            taskForm.assignee_id.includes(user.id)
+                              ? 'bg-white/20 text-white'
+                              : 'bg-slate-200 text-slate-600'
+                          "
+                        >
+                          {{ user.username.charAt(0).toUpperCase() }}
+                        </div>
+                        <span>{{ user.username }}</span>
+                      </div>
+                      <button
+                        v-if="taskForm.assignee_id.includes(user.id)"
+                        type="button"
+                        @click.stop="removeAssignee(user.id)"
+                        class="w-5 h-5 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                      >
+                        <svg
+                          class="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M6 18L18 6M6 6l12 12"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
               <span
                 v-if="assigneeError"
                 class="text-xs text-red-500 mt-1 block"
-                >{{ assigneeError }}</span
               >
+                {{ assigneeError }}
+              </span>
             </div>
 
             <!-- Deadline -->
@@ -135,27 +203,53 @@
             </div>
 
             <!-- Status -->
-            <div
-              class="w-[143px] relative flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 transition-all focus-within:border-[#238A63]"
-            >
-              <img
-                src="/icons/taskModal/Label.svg"
-                alt="status"
-                class="w-5 h-5 ml-2 grayscale opacity-60"
-              />
-              <select
-                v-model="taskForm.status"
-                class="w-full text-sm text-slate-700 bg-transparent outline-none border-none p-0 appearance-none cursor-pointer"
+            <div class="w-[143px] relative">
+              <div
+                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
+                v-click-outside="closeStatusDropdown"
               >
-                <option value="todo">در انتظار</option>
-                <option value="doing">در حال انجام</option>
+                <img
+                  src="/icons/taskModal/Label.svg"
+                  alt="status"
+                  class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
+                />
 
-                <option value="done">تکمیل شده</option>
-              </select>
+                <button
+                  type="button"
+                  @click="isStatusOpen = !isStatusOpen"
+                  class="w-full text-right text-sm text-slate-700"
+                >
+                  <span class="truncate">{{
+                    statusLabel(taskForm.status)
+                  }}</span>
+                </button>
+              </div>
+
+              <div
+                v-if="isStatusOpen"
+                class="absolute z-[9999] left-0 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden"
+              >
+                <div
+                  v-for="st in statuses"
+                  :key="st.value"
+                  @click="
+                    taskForm.status = st.value;
+                    isStatusOpen = false;
+                  "
+                  :class="[
+                    'flex items-center w-full px-3 py-2.5 cursor-pointer text-sm transition-all',
+                    taskForm.status === st.value
+                      ? 'bg-[#219653] text-white'
+                      : 'hover:bg-slate-50 text-slate-700',
+                  ]"
+                >
+                  <span>{{ st.label }}</span>
+                </div>
+              </div>
+              <span v-if="statusError" class="text-xs text-red-500 mt-1 block">
+                {{ statusError }}
+              </span>
             </div>
-            <span v-if="statusError" class="text-xs text-red-500 mt-1 block">{{
-              statusError
-            }}</span>
             <span
               v-if="statusRestrictionMsg"
               class="text-xs text-amber-600 mt-1 block"
@@ -211,9 +305,9 @@
                 <button
                   type="button"
                   @click="addSubtask()"
-                  class="text-xs font-bold text-[#238A63] hover:text-[#1b6d4e]"
+                  class="text-xl font-bold text-[#238A63] hover:text-[#1b6d4e]"
                 >
-                  + افزودن
+                  +
                 </button>
               </div>
               <div v-if="taskForm.subtasks.length" class="space-y-2">
@@ -230,6 +324,7 @@
                     placeholder="عنوان آیتم..."
                   />
                   <button
+                    type="button"
                     @click="removeSubtask(s.id)"
                     class="opacity-0 group-hover:opacity-100 transition text-red-500 hover:text-red-700"
                   >
@@ -284,7 +379,7 @@
               <div
                 v-for="(att, idx) in attachmentsLocal"
                 :key="idx"
-                class="group relative flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5"
+                class="group relative w-[40%] flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5"
               >
                 <span class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600">
                   {{ getFileExtension(att.name) }}
@@ -371,11 +466,11 @@
 
       <!-- Footer -->
       <footer
-        class="p-6 bg-slate-50/80 border-t border-slate-100 flex flex-col-reverse sm:flex-row gap-3 justify-center"
+        class="p-6 bg-slate-50/80 border-t flex flex-col-reverse sm:flex-row gap-3 justify-center"
       >
         <button
           type="button"
-          class="px-8 py-3 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-colors"
+          class="px-8 py-3 rounded-xl text-sm font-bold bg-[#F3F4F6] text-slate-500 hover:bg-slate-200 transition-colors"
           @click="handleCancel"
         >
           انصراف
@@ -395,9 +490,10 @@
 
 <script setup lang="ts">
 import { toRef, computed, ref, watch, onMounted, onUnmounted } from "vue";
-import type { Task } from "~/stores/taskStore";
+import type { Task, TaskStatus } from "~/stores/taskStore";
 import { useTaskForm } from "~/composables/useTaskForm";
 import { useRole } from "~/composables/useRole";
+import { USERS } from "~/composables/useUsers";
 
 const props = defineProps<{
   taskToEdit: Task;
@@ -408,13 +504,47 @@ const emit = defineEmits<{
   (e: "update", task: Task, files?: File[]): void;
 }>();
 
-const userList = [
-  { id: 1, username: "admin", role: "admin" },
-  { id: 2, username: "manager", role: "manager" },
-  { id: 3, username: "usertest", role: "user" },
+const userList = USERS;
+
+const isAssigneeOpen = ref(false);
+
+const closeAssigneeDropdown = () => {
+  isAssigneeOpen.value = false;
+};
+
+const toggleAssignee = (id: number) => {
+  if (taskForm.value.assignee_id.includes(id)) {
+    taskForm.value.assignee_id = taskForm.value.assignee_id.filter(
+      (i: number) => i !== id,
+    );
+  } else {
+    taskForm.value.assignee_id.push(id);
+  }
+  isAssigneeOpen.value = false;
+};
+
+const removeAssignee = (id: number) => {
+  taskForm.value.assignee_id = taskForm.value.assignee_id.filter(
+    (i: number) => i !== id,
+  );
+};
+
+const isStatusOpen = ref(false);
+
+const closeStatusDropdown = () => {
+  isStatusOpen.value = false;
+};
+
+const statuses: { value: TaskStatus; label: string }[] = [
+  { value: "todo", label: "برای انجام" },
+  { value: "doing", label: "در حال انجام" },
+  { value: "done", label: "تکمیل شده" },
 ];
 
-const { isUser } = useRole();
+const statusLabel = (s: TaskStatus) =>
+  statuses.find((st) => st.value === s)?.label || s;
+
+const { isUser, canEditTask } = useRole();
 
 const {
   taskForm,
@@ -534,6 +664,11 @@ onUnmounted(() => toggleScroll(false));
 
 // ========== Submit handler ==========
 const handleSubmit = async () => {
+  if (!canEditTask.value) {
+    emit("close");
+    return
+  }
+
   taskForm.value.subtasks = taskForm.value.subtasks.filter((s) =>
     s.title.trim(),
   );
@@ -556,15 +691,27 @@ const handleCancel = () => {
 </script>
 
 <style scoped>
+.custom-scrollbar {
+  direction: ltr;
+  scrollbar-width: thin;
+  scrollbar-color: #219653 #f1f1f1;
+}
+.custom-scrollbar > * {
+  direction: rtl;
+}
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f1f1;
+  border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: #219653;
   border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1d854a;
 }
 .fade-enter-active,
 .fade-leave-active {

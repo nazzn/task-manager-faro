@@ -173,7 +173,7 @@ import { taskService } from '~/services/taskService'
 const props = defineProps<{ taskId: number }>()
 
 const taskStore = useTaskStore()
-const { isAdmin, isManager } = useRole()
+const { isAdmin } = useRole()
 const userCookie = useCookie<any>('auth_user')
 
 const comments = computed(() => taskStore.comments)
@@ -185,7 +185,7 @@ const selectedFile = ref<File | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const canManage = (comment: any) =>
-  isAdmin.value || isManager.value || comment.user?.id === userCookie.value?.id
+  isAdmin.value || comment.user?.id === userCookie.value?.id
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return ''

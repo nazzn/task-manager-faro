@@ -254,7 +254,7 @@ export const useTaskStore = defineStore("taskStore", {
           throw new Error("پاسخ دریافتی از سرور معتبر نیست");
         }
       } catch (error: any) {
-        if (error.statusCode === 422 || error.response?.status === 422) {
+        if (error.status === 422 || error.statusCode === 422 || error.response?.status === 422) {
           throw error;
         }
         console.error("Create task error:", error);
@@ -356,7 +356,7 @@ export const useTaskStore = defineStore("taskStore", {
           return updatedTask;
         }
       } catch (error: any) {
-        if (error.statusCode === 422 || error.response?.status === 422) {
+        if (error.status === 422 || error.statusCode === 422 || error.response?.status === 422) {
           throw error;
         }
         console.error("Update task error:", error);
@@ -369,7 +369,7 @@ export const useTaskStore = defineStore("taskStore", {
         await taskService.deleteTask(id);
         this.tasks = this.tasks.filter((t) => t.id !== id);
       } catch (error: any) {
-        if (error.statusCode === 422 || error.response?.status === 422) {
+        if (error.status === 422 || error.statusCode === 422 || error.response?.status === 422) {
           throw error;
         }
         console.error("Delete task error:", error);
@@ -400,7 +400,7 @@ export const useTaskStore = defineStore("taskStore", {
         }
         return res;
       } catch (error: any) {
-        if (error.statusCode === 422 || error.response?.status === 422)
+        if (error.status === 422 || error.statusCode === 422 || error.response?.status === 422)
           throw error;
         throw error;
       }
@@ -447,7 +447,7 @@ export const useTaskStore = defineStore("taskStore", {
           task.subtasks = raw;
         }
       } catch (error: any) {
-        if (error.statusCode === 422 || error.response?.status === 422)
+        if (error.status === 422 || error.statusCode === 422 || error.response?.status === 422)
           throw error;
         throw error;
       }

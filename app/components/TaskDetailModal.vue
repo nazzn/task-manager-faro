@@ -88,16 +88,25 @@
             <!-- مسئول -->
             <div class="w-[143px]">
               <div
-                class="rounded-xl border border-slate-200 bg-white px-3 h-[46px] flex items-center"
+                class="rounded-xl border border-slate-200 bg-white px-3 min-h-[46px] py-2 flex items-center"
               >
                 <img
+                  v-if="!localTask.assignee"
                   src="/icons/taskModal/responsible.svg"
                   alt="assignee"
-                  class="w-5 h-5 ml-2 grayscale opacity-60"
+                  class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
                 />
-                <div class="text-sm text-slate-700 truncate">
-                  {{ localTask.assignee?.username || "تعیین نشده" }}
+                <div v-if="localTask.assignee" class="flex flex-wrap gap-1.5">
+                  <div
+                    class="w-7 h-7 rounded-full bg-[#219653] text-white flex items-center justify-center text-xs font-bold"
+                    :title="localTask.assignee.username"
+                  >
+                    {{ localTask.assignee.username.charAt(0).toUpperCase() }}
+                  </div>
                 </div>
+                <span v-else class="text-sm text-slate-400"
+                  >تعیین نشده</span
+                >
               </div>
             </div>
 
@@ -210,10 +219,7 @@
             >
               <h3 class="font-bold text-slate-700">پیوست‌ها</h3>
             </div>
-            <div
-              v-if="localTask.attachments?.length"
-              class="grid grid-cols-2 gap-3 sm:grid-cols-3"
-            >
+            <div v-if="localTask.attachments?.length" class="space-y-2">
               <component
                 :is="att.url || att.id ? 'a' : 'div'"
                 v-for="(att, idx) in localTask.attachments"
@@ -229,33 +235,42 @@
                     : {}
                 "
                 :class="[
-                  'group relative flex flex-col rounded-xl border border-slate-100 bg-slate-50 p-2.5 transition',
+                  'group relative w-[40%] flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5 transition',
                   att.url || att.id
                     ? 'hover:border-[#238A63]/40 hover:bg-[#238A63]/5 cursor-pointer'
                     : '',
                 ]"
               >
-                <div class="flex items-center justify-between mb-1">
+                <span class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600">
+                  {{ getFileExtension(att.name) }}
+                </span>
+                <span
+                  class="flex-1 truncate text-xs font-semibold text-slate-700"
+                  :title="att.name"
+                  >{{ att.name }}</span
+                >
+                <span class="flex-shrink-0 text-[10px] text-slate-400">{{
+                  formatFileSize(att.size)
+                }}</span>
+                <a
+                  v-if="att.id"
+                  :href="att.url || `/api/attachments/${att.id}/download`"
+                  download
+                  class="flex-shrink-0 p-1 text-slate-400 hover:text-[#219653] transition-colors"
+                  title="دانلود"
+                >
                   <svg
-                    class="h-5 w-5 text-slate-400"
+                    class="w-4 h-4"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M15.172 7l-2.828-2.828a4 4 0 00-5.656 0L4.93 6.828a4 4 0 000 5.656l4.242 4.242a4 4 0 005.656 0l2.828-2.828M9 15l6-6"
-                      stroke-width="1.5"
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      stroke-width="2"
                     />
                   </svg>
-                </div>
-                <span
-                  class="truncate text-xs font-semibold text-slate-700"
-                  :title="att.name"
-                  >{{ att.name }}</span
-                >
-                <span class="text-[10px] text-slate-400 uppercase">
-                  {{ formatDate(localTask.created_at) }}
-                </span>
+                </a>
               </component>
             </div>
             <div v-else class="text-xs text-slate-400">
@@ -297,11 +312,11 @@
 
       <!-- Footer با دکمه بستن -->
       <footer
-        class="p-6 bg-slate-50/80 border-t border-slate-100 flex justify-center"
+        class="p-6 bg-slate-50/80 border-t flex justify-center"
       >
         <button
           type="button"
-          class="px-8 py-3 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-200 transition-colors"
+          class="px-8 py-3 rounded-xl text-sm font-bold bg-[#F3F4F6] text-slate-500 hover:bg-slate-200 transition-colors"
           @click="emit('close')"
         >
           بستن
@@ -315,6 +330,7 @@
 import { computed, ref, onMounted } from "vue";
 import type { Task } from "~/stores/taskStore";
 import { useTaskStore } from "~/stores/taskStore";
+import { USERS } from "~/composables/useUsers";
 
 const props = defineProps<{
   task: Task;
@@ -327,6 +343,8 @@ const emit = defineEmits<{
   (e: "edit", task: Task): void;
   (e: "delete", id: number): void;
 }>();
+
+const userList = USERS;
 
 const taskStore = useTaskStore();
 
@@ -427,6 +445,17 @@ const formatDate = (date?: string | null) => {
     day: "2-digit",
   });
 };
+
+const getFileExtension = (name: string) => {
+  const parts = name?.split(".") ?? [];
+  return parts.length > 1 ? parts.pop()!.toUpperCase() : "FILE";
+};
+
+const formatFileSize = (bytes: number) => {
+  if (!bytes) return "0 KB";
+  const kb = bytes / 1024;
+  return kb < 1024 ? `${kb.toFixed(0)} KB` : `${(kb / 1024).toFixed(1)} MB`;
+};
 </script>
 
 <script lang="ts">
@@ -482,15 +511,27 @@ export const IconTrash = defineComponent({
 </script>
 
 <style scoped>
+.custom-scrollbar {
+  direction: ltr;
+  scrollbar-width: thin;
+  scrollbar-color: #219653 #f1f1f1;
+}
+.custom-scrollbar > * {
+  direction: rtl;
+}
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f1f1;
+  border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: #219653;
   border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1d854a;
 }
 .fade-enter-active,
 .fade-leave-active {
