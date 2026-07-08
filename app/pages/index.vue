@@ -44,7 +44,7 @@
       <div
         class="table-header grid grid-cols-12 px-8 py-5 text-sm text-[#4B5563] font-semibold flex-shrink-0"
       >
-        <div class="col-span-5">
+        <div class="col-span-4">
           <!-- استفاده از flex و gap دقیقاً مشابه ردیف‌های پایین -->
           <div class="flex items-center gap-3">
             <!-- این div فضای اشغال شده توسط چک‌باکس را در هر رزولوشنی دقیقاً شبیه‌سازی می‌کند -->
@@ -55,7 +55,7 @@
 
         <div class="col-span-3 text-center">مسئول</div>
         <div class="col-span-2 text-center">مهلت انجام</div>
-        <div class="col-span-2 text-center">وضعیت</div>
+        <div class="col-span-3 text-center">وضعیت</div>
       </div>
 
       <!-- Scrollable Body with Fade Effect -->
@@ -78,14 +78,23 @@
                   index === paginatedTasks.length - 1,
                 'task-selected': taskStore.selectedTask?.id === task.id,}">
               <!-- Title -->
-              <div class="col-span-5">
-                <div class="flex items-start gap-1">
-                  <input
-                    type="checkbox"
-                    class="mt-1 w-4 h-4 rounded border border-[#B7D8C6] cursor-pointer accent-[#219653]"
-                    :checked="task.status === 'done'"
-                    @click.stop="toggleTaskStatus(task)"
-                  />
+              <div class="col-span-4">
+                <div class="flex items-start gap-3">
+                  <div
+                    class="relative inline-flex flex-shrink-0 mt-1"
+                    :title="priorityLabel(task.priority)"
+                  >
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border border-[#B7D8C6] cursor-pointer accent-[#219653]"
+                      :checked="task.status === 'done'"
+                      @click.stop="toggleTaskStatus(task)"
+                    />
+                    <span
+                      class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-white"
+                      :class="priorityDotClass(task.priority)"
+                    ></span>
+                  </div>
                   <div>
                     <div class="font-semibold text-slate-800">
                       {{ task.title }}
@@ -112,7 +121,7 @@
               </div>
 
               <!-- Status -->
-              <div class="col-span-2 flex justify-center">
+              <div class="col-span-3 flex justify-center">
                 <span
                   class="px-4 py-2 rounded-lg text-xs font-medium"
                   :class="statusBadgeClass(task.status)"
@@ -517,6 +526,20 @@ const statusBadgeClass = (s: Task["status"]) => {
   if (s === "doing") return "bg-blue-50 text-blue-700 border-blue-100";
 
   return "bg-slate-50 text-slate-700 border-slate-200";
+};
+
+const priorityLabel = (p: Task["priority"]) => {
+  if (p === "high") return "فوری";
+  if (p === "medium") return "متوسط";
+  if (p === "low") return "عادی";
+  return "نامشخص";
+};
+
+const priorityDotClass = (p: Task["priority"]) => {
+  if (p === "high") return "bg-red-500";
+  if (p === "medium") return "bg-yellow-500";
+  if (p === "low") return "bg-blue-500";
+  return "bg-slate-300";
 };
 
 // ========== Modal States ==========

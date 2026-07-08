@@ -106,6 +106,8 @@
                 {{ endDateError }}
               </span>
             </div>
+          
+
             <!-- Status -->
             <div class="w-[143px] relative">
               <div
@@ -171,6 +173,49 @@
             <span v-if="subtasksError" class="text-xs text-red-500 block">
               {{ subtasksError }}
             </span>
+              <!-- Priority -->
+            <div class="w-[143px] relative">
+              <div
+                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
+                v-click-outside="closePriorityDropdown"
+              >
+                <svg class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3" />
+                </svg>
+
+                <button
+                  type="button"
+                  @click="isPriorityOpen = !isPriorityOpen"
+                  class="w-full text-right text-sm text-slate-700"
+                >
+                  <span class="truncate">{{
+                    priorityLabel(taskForm.priority)
+                  }}</span>
+                </button>
+              </div>
+
+              <div
+                v-if="isPriorityOpen"
+                class="absolute z-[9999] left-0 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden"
+              >
+                <div
+                  v-for="pr in priorities"
+                  :key="pr.value"
+                  @click="
+                    taskForm.priority = pr.value;
+                    isPriorityOpen = false;
+                  "
+                  :class="[
+                    'flex items-center w-full px-3 py-2.5 cursor-pointer text-sm transition-all',
+                    taskForm.priority === pr.value
+                      ? 'bg-[#219653] text-white'
+                      : 'hover:bg-slate-50 text-slate-700',
+                  ]"
+                >
+                  <span>{{ pr.label }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Subtasks Panel -->
@@ -361,9 +406,14 @@ const tempDateValue = ref<string | null>(null);
 const datePickerRef = ref(null);
 const datePickerPanel = ref<HTMLElement | null>(null);
 const isStatusOpen = ref(false);
+const isPriorityOpen = ref(false);
 
 const closeStatusDropdown = () => {
   isStatusOpen.value = false;
+};
+
+const closePriorityDropdown = () => {
+  isPriorityOpen.value = false;
 };
 
 const statuses: { value: TaskStatus; label: string }[] = [
@@ -374,6 +424,15 @@ const statuses: { value: TaskStatus; label: string }[] = [
 
 const statusLabel = (s: TaskStatus) =>
   statuses.find((st) => st.value === s)?.label || s;
+
+const priorities: { value: "low" | "medium" | "high"; label: string }[] = [
+  { value: "low", label: "عادی" },
+  { value: "medium", label: "متوسط" },
+  { value: "high", label: "فوری" },
+];
+
+const priorityLabel = (p: "low" | "medium" | "high") =>
+  priorities.find((pr) => pr.value === p)?.label || p;
 
 /* Props */
 const props = defineProps<{

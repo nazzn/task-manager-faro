@@ -47,7 +47,7 @@
       <div class="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
         <form
           id="editTaskForm"
-          class="space-y-"
+          class="space-y-8"
           @submit.prevent="handleSubmit"
         >
           <!-- Task Title -->
@@ -67,6 +67,8 @@
 
           <!-- META ROW -->
           <div class="flex flex-wrap items-start gap-4">
+          
+
             <AssigneeSelector
               v-model="taskForm.assignee_id"
               :users="userList"
@@ -180,73 +182,96 @@
                 subtasksError
               }}</span>
             </button>
-          </div>
 
-          <!-- Priority (یک select جدا) -->
-          <!-- <div class="flex flex-wrap items-start gap-4">
-            <div class="w-[143px]">
+  <!-- Priority -->
+            <div class="w-[143px] relative">
               <div
-                class="rounded-xl border border-slate-200 bg-white px-3 h-[46px] flex items-center transition-all focus-within:border-[#238A63]"
-              >
-                <img
-                  src="/icons/taskModal/Calendar.svg"
-                  alt="priority"
-                  class="w-5 h-5 ml-2 grayscale opacity-60"
-                />
-                <select
-                  v-model="taskForm.priority"
-                  class="w-full text-sm text-slate-700 bg-transparent outline-none border-none p-0 appearance-none cursor-pointer"
-                >
-                  <option value="low">عادی</option>
-                  <option value="medium">متوسط</option>
-                  <option value="high">فوری</option>
-                </select>
-              </div>
-            </div>
-          </div> -->
+                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
+                v-click-outside="closePriorityDropdown">
+                <svg class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3" />
+                </svg>
 
-          <!-- Subtasks Panel -->
-          <transition name="fade">
-            <div v-if="showSubtasks" class="space-y-3 mt-4">
-              <div
-                class="flex items-center justify-between border-b border-slate-100 pb-2"
-              >
-                <h3 class="font-bold text-slate-700">چک لیست</h3>
                 <button
                   type="button"
-                  @click="addSubtask()"
-                  class="text-xl font-bold text-[#238A63] hover:text-[#1b6d4e]"
+                  @click="isPriorityOpen = !isPriorityOpen"
+                  class="w-full text-right text-sm text-slate-700"
                 >
-                  +
+                  <span class="truncate">{{
+                    priorityLabel(taskForm.priority)
+                  }}</span>
                 </button>
               </div>
-              <div v-if="taskForm.subtasks.length" class="space-y-2">
+
+              <div
+                v-if="isPriorityOpen"
+                class="absolute z-[9999] left-0 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden"
+              >
                 <div
-                  v-for="(s, i) in taskForm.subtasks"
-                  :key="s.id"
-                  class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition group"
+                  v-for="pr in priorities"
+                  :key="pr.value"
+                  @click="
+                    taskForm.priority = pr.value;
+                    isPriorityOpen = false;
+                  "
+                  :class="[
+                    'flex items-center w-full px-3 py-2.5 cursor-pointer text-sm transition-all',
+                    taskForm.priority === pr.value
+                      ? 'bg-[#219653] text-white'
+                      : 'hover:bg-slate-50 text-slate-700',
+                  ]"
                 >
-                  <input type="checkbox" v-model="s.is_completed" />
-                  <input
-                    v-model="s.title"
-                    type="text"
-                    class="flex-1 bg-transparent border-none outline-none text-sm"
-                    placeholder="عنوان آیتم..."
-                  />
-                  <button
-                    type="button"
-                    @click="removeSubtask(s.id)"
-                    class="opacity-0 group-hover:opacity-100 transition text-red-500 hover:text-red-700"
-                  >
-                    ✕
-                  </button>
+                  <span>{{ pr.label }}</span>
                 </div>
               </div>
-              <div v-else class="text-xs text-slate-400 text-center">
-                هنوز آیتمی ثبت نشده
+            </div>
+
+
+
+
+
+          </div>
+
+          <!-- Subtasks Panel -->
+          <div v-if="showSubtasks" class="rounded-2xl border border-slate-200 bg-white p-4 mt-4">
+            <div
+              class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3"
+            >
+              <h3 class="font-bold text-slate-700">چک لیست</h3>
+              <button
+                type="button"
+                @click="addSubtask()"
+                class="text-xl font-bold text-[#238A63] hover:text-[#1b6d4e]"
+              >
+                +
+              </button>
+            </div>
+            <div v-if="taskForm.subtasks.length" class="space-y-2">
+              <div
+                v-for="(s, i) in taskForm.subtasks"
+                :key="s.id"
+                class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition group"
+              >
+                <input type="checkbox" v-model="s.is_completed" />
+                <input
+                  v-model="s.title"
+                  type="text"
+                  class="flex-1 bg-transparent border-none outline-none text-sm"
+                  placeholder="عنوان آیتم..."
+                />
+                <button
+                  type="button"
+                  @click="removeSubtask(s.id)"
+                  class="opacity-0 group-hover:opacity-100 transition text-red-500 hover:text-red-700"
+                >
+                  ✕
+                </button>
               </div>
             </div>
-          </transition>
+            <div v-else class="text-xs text-slate-400 text-center py-4">
+              هنوز آیتمی ثبت نشده
+            </div>
+          </div>
 
           <!-- Description -->
           <div class="space-y-2">
@@ -417,9 +442,14 @@ const emit = defineEmits<{
 const userList = USERS;
 
 const isStatusOpen = ref(false);
+const isPriorityOpen = ref(false);
 
 const closeStatusDropdown = () => {
   isStatusOpen.value = false;
+};
+
+const closePriorityDropdown = () => {
+  isPriorityOpen.value = false;
 };
 
 const statuses: { value: TaskStatus; label: string }[] = [
@@ -430,6 +460,15 @@ const statuses: { value: TaskStatus; label: string }[] = [
 
 const statusLabel = (s: TaskStatus) =>
   statuses.find((st) => st.value === s)?.label || s;
+
+const priorities: { value: "low" | "medium" | "high"; label: string }[] = [
+  { value: "low", label: "عادی" },
+  { value: "medium", label: "متوسط" },
+  { value: "high", label: "فوری" },
+];
+
+const priorityLabel = (p: "low" | "medium" | "high") =>
+  priorities.find((pr) => pr.value === p)?.label || p;
 
 const { isUser, canEditTask } = useRole();
 

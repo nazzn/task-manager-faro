@@ -83,8 +83,10 @@
             </div>
           </div>
 
-          <!-- ردیف متا (مسئول، مهلت، وضعیت، چک‌لیست) -->
+          <!-- ردیف متا (اولویت، مسئول، مهلت، وضعیت، چک‌لیست) -->
           <div class="flex flex-wrap items-start gap-4">
+           
+
             <div class="w-[143px]">
               <div
                 class="rounded-xl border border-slate-200 bg-white px-3 min-h-[46px] py-2 flex items-center"
@@ -127,7 +129,7 @@
               </div>
             </div>
 
-            <!-- دکمه چک‌لیست (تعداد) -->
+            <!-- زیرتسک‌ها (تعداد و درصد پیشرفت) -->
             <button
               type="button"
               @click="showSubtasks = !showSubtasks"
@@ -135,57 +137,76 @@
             >
               چک لیست
               <span class="text-xs text-slate-400"
-                >({{ localTask.subtasks?.length || 0 }})</span
+                >{{ completedSubtasks }}/{{ localTask.subtasks?.length || 0 }}</span
               >
-            </button>
-          </div>
-
-          <!-- نمایش اولویت (به سبک مودال ایجاد) -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-2"
-              >اولویت</label
-            >
-            <!-- <div
-              class="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-800 flex items-center justify-between gap-2"
-            >
-              <span class="text-slate-700">{{ priorityLabel }}</span>
               <span
-                class="rounded-full px-2.5 py-1 text-[11px] font-bold"
-                :class="priorityBadgeClass"
+                v-if="localTask.subtasks?.length"
+                class="text-xs font-bold"
+                :class="subtaskPercentClass"
+              >{{ subtaskPercent }}%</span>
+            </button>
+
+            <!-- برچسب‌ها -->
+            <div class="flex items-center gap-1.5 min-h-[46px] rounded-xl border border-slate-200 bg-white px-3">
+              <template v-if="localTask.tag_ids?.length">
+                <span
+                  v-for="id in localTask.tag_ids"
+                  :key="id"
+                  class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                  :style="{ backgroundColor: (tagMap[id]?.color || '#e2e8f0') + '30', color: tagMap[id]?.color || '#475569', border: '1px solid ' + (tagMap[id]?.color || '#e2e8f0') }"
+                >
+                  {{ tagMap[id]?.name || "?" }}
+                </span>
+              </template>
+              <span v-else class="text-sm text-slate-400">بدون برچسب</span>
+            </div>
+
+            <!-- اولویت -->
+            <div class="w-[143px]">
+              <div
+                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800"
               >
-                {{ priorityBadgeText }}
-              </span>
-            </div> -->
+                <svg class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3" />
+                </svg>
+                <span class="text-slate-700">{{ priorityLabel }}</span>
+              </div>
+            </div> 
           </div>
 
-          <!-- پنل زیرتسک‌ها (اختیاری) -->
-          <transition name="fade">
-            <div v-if="showSubtasks" class="space-y-3 mt-4">
-              <div
-                class="flex items-center justify-between border-b border-slate-100 pb-2"
+          <!-- پنل زیرتسک‌ها (فقط در صورت وجود داده) -->
+          <div v-if="showSubtasks && localTask.subtasks?.length" class="rounded-2xl border border-slate-200 bg-white p-4">
+            <div
+              class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3"
+            >
+              <h3 class="font-bold text-slate-700">چک لیست</h3>
+              <span class="text-xs text-slate-400"
+                >{{ completedSubtasks }}/{{ localTask.subtasks.length }}</span
               >
-                <h3 class="font-bold text-slate-700">چک لیست</h3>
-              </div>
-              <div v-if="localTask.subtasks?.length" class="space-y-2">
-                <div
-                  v-for="sub in localTask.subtasks"
-                  :key="sub.id"
-                  class="flex items-center gap-3 p-2 rounded-lg bg-slate-50"
-                >
-                  <input
-                    type="checkbox"
-                    :checked="sub.is_completed"
-                    disabled
-                    class="accent-[#238A63] cursor-not-allowed"
-                  />
-                  <span class="text-sm text-slate-700">{{ sub.title }}</span>
-                </div>
-              </div>
-              <div v-else class="text-xs text-slate-400 text-center">
-                هیچ آیتمی ثبت نشده
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 rounded-full mb-4 overflow-hidden">
+              <div
+                class="h-full rounded-full transition-all duration-300"
+                :class="subtaskPercent === 100 ? 'bg-emerald-500' : 'bg-amber-500'"
+                :style="{ width: subtaskPercent + '%' }"
+              ></div>
+            </div>
+            <div class="space-y-2">
+              <div
+                v-for="sub in localTask.subtasks"
+                :key="sub.id"
+                class="flex items-center gap-3 p-2 rounded-lg bg-slate-50"
+              >
+                <input
+                  type="checkbox"
+                  :checked="sub.is_completed"
+                  @click.stop="toggleSubtask(sub)"
+                  class="accent-[#238A63] cursor-pointer"
+                />
+                <span class="text-sm text-slate-700">{{ sub.title }}</span>
               </div>
             </div>
-          </transition>
+          </div>
 
           <!-- توضیحات -->
           <div class="space-y-2">
@@ -313,9 +334,11 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
-import type { Task } from "~/stores/taskStore";
+import type { Task, Subtask } from "~/stores/taskStore";
 import { useTaskStore } from "~/stores/taskStore";
 import { getUserById } from "~/composables/useUsers";
+import { taskService } from "~/services/taskService";
+type Tag = { id: number; name: string; color?: string }
 const props = defineProps<{
   task: Task;
   canEdit?: boolean;
@@ -384,37 +407,49 @@ const statusLabel = computed(() => {
   return s || "نامشخص";
 });
 
-// اولویت
-// const normalizedPriority = computed(() =>
-//   String(localTask.value.priority || "").toLowerCase(),
-// );
-// const priorityLabel = computed(() => {
-//   const p = normalizedPriority.value;
-//   if (p === "high") return "فوری";
-//   if (p === "medium") return "متوسط";
-//   if (p === "low") return "عادی";
-//   return localTask.value.priority || "نامشخص";
-// });
-// const priorityBadgeText = computed(() => {
-//   const p = normalizedPriority.value;
-//   if (p === "high") return "High";
-//   if (p === "medium") return "Med";
-//   if (p === "low") return "Low";
-//   return "—";
-// });
-// const priorityBadgeClass = computed(() => {
-//   const p = normalizedPriority.value;
-//   if (p === "high")
-//     return "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-100";
-//   if (p === "medium")
-//     return "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-100";
-//   if (p === "low")
-//     return "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-100";
-//   return "bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-200";
-// });
+const normalizedPriority = computed(() =>
+  String(localTask.value.priority || "").toLowerCase(),
+);
+const priorityLabel = computed(() => {
+  const p = normalizedPriority.value;
+  if (p === "high") return "فوری";
+  if (p === "medium") return "متوسط";
+  if (p === "low") return "عادی";
+  return localTask.value.priority || "نامشخص";
+});
 
-// نمایش / عدم نمایش زیرتسک‌ها
-const showSubtasks = ref(true);
+const showSubtasks = ref(true)
+
+const completedSubtasks = computed(() =>
+  localTask.value.subtasks?.filter(s => s.is_completed).length ?? 0
+)
+const subtaskPercent = computed(() => {
+  const total = localTask.value.subtasks?.length ?? 0
+  return total ? Math.round((completedSubtasks.value / total) * 100) : 0
+})
+const subtaskPercentClass = computed(() => {
+  if (subtaskPercent.value === 100) return "text-emerald-600"
+  if (subtaskPercent.value >= 50) return "text-amber-600"
+  return "text-slate-400"
+})
+
+const allTags = ref<Tag[]>([])
+const tagMap = computed(() => {
+  const map: Record<number, Tag> = {}
+  for (const tag of allTags.value) {
+    map[tag.id] = tag
+  }
+  return map
+})
+
+onMounted(async () => {
+  try {
+    const res: any = await taskService.getTags()
+    allTags.value = res?.data?.tags ?? res?.data ?? res ?? []
+  } catch (e) {
+    console.error("Failed to load tags:", e)
+  }
+})
 
 const formatDate = (date?: string | null) => {
   if (!date) return null;
@@ -427,6 +462,16 @@ const formatDate = (date?: string | null) => {
     day: "2-digit",
   });
 };
+
+const toggleSubtask = async (sub: Subtask) => {
+  const newStatus = sub.is_completed ? "todo" : "done"
+  try {
+    await taskService.updateTask(sub.id, { status: newStatus })
+    sub.is_completed = !sub.is_completed
+  } catch (e) {
+    console.error("Failed to toggle subtask:", e)
+  }
+}
 
 const getFileExtension = (name: string) => {
   const parts = name?.split(".") ?? [];

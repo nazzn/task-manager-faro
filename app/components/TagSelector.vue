@@ -48,32 +48,44 @@
                 +
               </button>
             </div>
-            <div v-else class="flex items-center gap-1">
+            <div v-else class="flex flex-col gap-2">
               <input
                 ref="createInputRef"
                 v-model="newTagName"
                 type="text"
                 placeholder="نام برچسب..."
-                class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-1.5 outline-none focus:border-[#219653]"
+                class="w-full text-xs border border-slate-300 rounded-lg px-2 py-1.5 outline-none focus:border-[#219653]"
                 @keydown.enter.stop="submitCreate"
                 @keydown.esc.stop="cancelCreate"
               />
-              <button
-                type="button"
-                @click.stop="submitCreate"
-                class="w-6 h-6 rounded-full bg-[#219653] text-white flex items-center justify-center text-xs font-bold hover:bg-[#1a7342] transition-colors flex-shrink-0"
-                title="تایید"
-              >
-                ✓
-              </button>
-              <button
-                type="button"
-                @click.stop="cancelCreate"
-                class="w-6 h-6 rounded-full bg-slate-300 text-white flex items-center justify-center text-xs font-bold hover:bg-slate-400 transition-colors flex-shrink-0"
-                title="لغو"
-              >
-                ✕
-              </button>
+              <div class="flex items-center gap-1.5">
+                <div
+                  v-for="c in colors"
+                  :key="c"
+                  @click.stop="selectedColor = c"
+                  class="w-5 h-5 rounded-full cursor-pointer transition-all ring-1 ring-slate-300"
+                  :class="selectedColor === c ? 'ring-2 ring-offset-1 ring-slate-600 scale-110' : 'hover:scale-110'"
+                  :style="{ backgroundColor: c }"
+                ></div>
+              </div>
+              <div class="flex items-center gap-1">
+                <button
+                  type="button"
+                  @click.stop="submitCreate"
+                  class="w-6 h-6 rounded-full bg-[#219653] text-white flex items-center justify-center text-xs font-bold hover:bg-[#1a7342] transition-colors flex-shrink-0"
+                  title="تایید"
+                >
+                  ✓
+                </button>
+                <button
+                  type="button"
+                  @click.stop="cancelCreate"
+                  class="w-6 h-6 rounded-full bg-slate-300 text-white flex items-center justify-center text-xs font-bold hover:bg-slate-400 transition-colors flex-shrink-0"
+                  title="لغو"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           </div>
 
@@ -147,11 +159,8 @@ const tagMap = computed(() => {
   return map
 })
 
-const colors = ["#ef4444", "#3b82f6", "#8b5cf6", "#f59e0b", "#10b981", "#ec4899", "#14b8a6", "#f97316"]
-
-function randomColor() {
-  return colors[Math.floor(Math.random() * colors.length)]
-}
+const selectedColor = ref("#ef4444")
+const colors = ["#ef4444", "#3b82f6", "#8b5cf6", "#f59e0b", "#10b981", "#ec4899", "#14b8a6"]
 
 onMounted(async () => {
   try {
@@ -186,6 +195,7 @@ const remove = (id: number) => {
 function startCreate() {
   isCreating.value = true
   newTagName.value = ""
+  selectedColor.value = colors[0]
   nextTick(() => {
     createInputRef.value?.focus()
   })
@@ -201,7 +211,7 @@ async function submitCreate() {
   if (!name) return
 
   try {
-    const res: any = await taskService.createTag({ name, color: randomColor() })
+    const res: any = await taskService.createTag({ name, color: selectedColor.value })
     const created: Tag = res?.data ?? res
     tags.value.push(created)
     emit("update:modelValue", [...props.modelValue, created.id])
