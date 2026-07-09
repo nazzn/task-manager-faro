@@ -139,15 +139,16 @@
               <span class="text-xs text-slate-400"
                 >{{ completedSubtasks }}/{{ localTask.subtasks?.length || 0 }}</span
               >
-              <span
-                v-if="localTask.subtasks?.length"
-                class="text-xs font-bold"
-                :class="subtaskPercentClass"
-              >{{ subtaskPercent }}%</span>
+            
             </button>
 
             <!-- برچسب‌ها -->
-            <div class="flex items-center gap-1.5 min-h-[46px] rounded-xl border border-slate-200 bg-white px-3">
+            <div class="flex items-center gap-1.5 min-h-[46px] rounded-xl border border-slate-200 bg-white px-3 flex-1 min-w-[100px]">
+              <img
+                src="/icons/taskModal/Label.svg"
+                alt="tags"
+                class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
+              />
               <template v-if="localTask.tag_ids?.length">
                 <span
                   v-for="id in localTask.tag_ids"

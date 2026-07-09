@@ -1,11 +1,4 @@
-let nextId = 100
-const mockTags: { id: number; name: string; color: string }[] = [
-  { id: 1, name: "urgent", color: "#ef4444" },
-  { id: 2, name: "frontend", color: "#3b82f6" },
-  { id: 3, name: "backend", color: "#8b5cf6" },
-  { id: 4, name: "bug", color: "#f59e0b" },
-  { id: 5, name: "feature", color: "#10b981" },
-]
+import { mockTags } from "./mock"
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
@@ -24,8 +17,9 @@ export default defineEventHandler(async (event) => {
       headers: authorization ? { Authorization: authorization } : undefined,
     })
   } catch {
+    const id = Math.max(...mockTags.map(t => t.id), 0) + 1
     const newTag = {
-      id: nextId++,
+      id,
       name: body.name,
       color: body.color || "#94a3b8",
     }

@@ -64,7 +64,7 @@
           ref="scrollContainer"
           class="absolute inset-0 overflow-y-auto py-2 scroll-right"
         >
-          <div class="divide-y divide-slate-100 rounded-xl pb-4  content-rtl">
+          <div class="divide-y divide-slate-100 rounded-xl pb-4 content-rtl">
             <div
               v-for="(task, index) in paginatedTasks"
               :key="task.id"
@@ -76,31 +76,35 @@
                 'opacity-50 scale-95':
                   isLastTaskPartiallyVisible &&
                   index === paginatedTasks.length - 1,
-                'task-selected': taskStore.selectedTask?.id === task.id,}">
+                'task-selected': taskStore.selectedTask?.id === task.id,
+              }"
+            >
               <!-- Title -->
               <div class="col-span-4">
-                <div class="flex items-start gap-3">
-                  <div
-                    class="relative inline-flex flex-shrink-0 mt-1"
-                    :title="priorityLabel(task.priority)"
-                  >
-                    <input
-                      type="checkbox"
-                      class="w-4 h-4 rounded border border-[#B7D8C6] cursor-pointer accent-[#219653]"
-                      :checked="task.status === 'done'"
-                      @click.stop="toggleTaskStatus(task)"
-                    />
-                    <span
-                      class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-white"
-                      :class="priorityDotClass(task.priority)"
-                    ></span>
-                  </div>
-                  <div>
-                    <div class="font-semibold text-slate-800">
-                      {{ task.title }}
+                <div class="flex items-start gap- flex-col">
+                  <div class="">
+                    <div
+                      class="relative inline-flex flex-shrink-0 mt-1 gap-2"
+                      :title="priorityLabel(task.priority)">
+                      <input
+                        type="checkbox"
+                        class="w-4 h-4 rounded border border-[#B7D8C6] cursor-pointer accent-[#219653]"
+                        :checked="task.status === 'done'"
+                        @click.stop="toggleTaskStatus(task)"
+                      />
+                      <span
+                        class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-white"
+                        :class="priorityDotClass(task.priority)"
+                      ></span>
+                      <div class="font-semibold text-slate-800">
+                        {{ task.title }}
+                      </div>
                     </div>
-
-                    <div class="text-xs text-slate-400 mt-1">
+                  </div>
+                  <div class="grid justify-items-start w-full text-left">
+                    <div
+                      class="text-xs text-slate-400 mt-1 line-clamp-1 w-[60%] justify-self-start text-left"
+                    >
                       {{ task.description }}
                     </div>
                   </div>
@@ -211,28 +215,30 @@
 
         <!-- ===== نشانگر فلش در پایین ===== -->
         <button
-  v-if="hasMoreTasks && !isLoadingMore"
-  @click="scrollToLastTask"
-  class="absolute bottom-2 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-10"
-  title="رفتن به آخرین تسک"
->
-  <div class="bg-[#219653] text-white rounded-full p-2 shadow-lg hover:bg-[#1d854a] transition-colors">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="w-5 h-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M19 14l-7 7m0 0l-7-7m7 7V3"
-      />
-    </svg>
-  </div>
-</button>
+          v-if="hasMoreTasks && !isLoadingMore"
+          @click="scrollToLastTask"
+          class="absolute bottom-2 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-10"
+          title="رفتن به آخرین تسک"
+        >
+          <div
+            class="bg-[#219653] text-white rounded-full p-2 shadow-lg hover:bg-[#1d854a] transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
+          </div>
+        </button>
       </div>
     </section>
 
@@ -401,16 +407,16 @@ watch(filteredTasks, async () => {
 onMounted(async () => {
   try {
     await taskStore.loadTasks();
-    console.log('Tasks after load:', taskStore.tasks);
-    console.log('Filtered tasks:', filteredTasks.value);
-    
+    console.log("Tasks after load:", taskStore.tasks);
+    console.log("Filtered tasks:", filteredTasks.value);
+
     await nextTick();
     calculateHeight();
     window.addEventListener("resize", calculateHeight);
     setTimeout(checkLastTaskVisibility, 100);
   } catch (error) {
-    console.error('Error loading tasks:', error);
-    showToast('خطا در بارگذاری تسک‌ها');
+    console.error("Error loading tasks:", error);
+    showToast("خطا در بارگذاری تسک‌ها");
   }
 });
 onBeforeUnmount(() => {
@@ -498,10 +504,12 @@ const toggleTaskStatus = async (task: Task) => {
       newStatus === "done" ? "✅ تسک تکمیل شد" : "🔄 تسک در حال انجام شد",
     );
   } catch (error: any) {
-    if (error.status === 422 || error.statusCode === 422 || error.response?.status === 422) {
-      showToast(
-        "❌ تغییر وضعیت مجاز نیست. ترتیب تغییرات: todo → doing → done",
-      );
+    if (
+      error.status === 422 ||
+      error.statusCode === 422 ||
+      error.response?.status === 422
+    ) {
+      showToast("❌ تغییر وضعیت مجاز نیست. ترتیب تغییرات: todo → doing → done");
     } else {
       showToast("خطایی رخ داد. لطفاً دوباره تلاش کنید");
     }
@@ -514,7 +522,7 @@ const formatDate = (date?: string | null) => {
 };
 
 const statusLabel = (s: Task["status"]) => {
-    if (s === "todo") return "برای انجام";
+  if (s === "todo") return "برای انجام";
   if (s === "doing") return "در حال انجام";
 
   if (s === "done") return "تکمیل شده";
@@ -559,15 +567,15 @@ const openTaskDetail = async (taskId: number) => {
   }
 };
 const scrollToLastTask = () => {
-  if (!scrollContainer.value) return
+  if (!scrollContainer.value) return;
 
-  const tasks = scrollContainer.value.querySelectorAll('.task-row')
-  const lastTask = tasks[tasks.length - 1] as HTMLElement
+  const tasks = scrollContainer.value.querySelectorAll(".task-row");
+  const lastTask = tasks[tasks.length - 1] as HTMLElement;
 
   if (lastTask) {
-    lastTask.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    lastTask.scrollIntoView({ behavior: "smooth", block: "center" });
   }
-} 
+};
 </script>
 
 <style scoped>
