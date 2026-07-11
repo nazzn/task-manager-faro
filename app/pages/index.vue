@@ -42,14 +42,14 @@
     >
       <!-- Header -->
       <div
-        class="table-header grid grid-cols-12 px-8 py-5 text-sm text-[#4B5563] font-semibold flex-shrink-0"
+      class="table-header grid grid-cols-12 px-8 py-5 text-sm text-[#4B5563] font-semibold flex-shrink-0"
       >
         <div class="col-span-4">
           <!-- استفاده از flex و gap دقیقاً مشابه ردیف‌های پایین -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
             <!-- این div فضای اشغال شده توسط چک‌باکس را در هر رزولوشنی دقیقاً شبیه‌سازی می‌کند -->
             <div class="w-5 h-4 flex-shrink-0"></div>
-            <span class="truncate text-center">عنوان وظیفه</span>
+            <span class="truncate text-right w-full">عنوان وظیفه</span>
           </div>
         </div>
 
@@ -64,7 +64,7 @@
           ref="scrollContainer"
           class="absolute inset-0 overflow-y-auto py-2 scroll-right"
         >
-          <div class="divide-y divide-slate-100 rounded-xl pb-4 content-rtl">
+         <div class="divide-y divide-slate-100 rounded-xl pb-4 content-rtl">
             <div
               v-for="(task, index) in paginatedTasks"
               :key="task.id"
@@ -79,55 +79,81 @@
                 'task-selected': taskStore.selectedTask?.id === task.id,
               }"
             >
-              <!-- Title -->
               <div class="col-span-4">
-                <div class="flex items-start gap- flex-col">
-                  <div class="">
-                    <div
-                      class="relative inline-flex flex-shrink-0 mt-1 gap-2"
-                      :title="priorityLabel(task.priority)">
-                      <input
-                        type="checkbox"
-                        class="w-4 h-4 rounded border border-[#B7D8C6] cursor-pointer accent-[#219653]"
-                        :checked="task.status === 'done'"
-                        @click.stop="toggleTaskStatus(task)"
-                      />
-                      <span
-                        class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-white"
-                        :class="priorityDotClass(task.priority)"
-                      ></span>
-                      <div class="font-semibold text-slate-800">
-                        {{ task.title }}
-                      </div>
-                    </div>
-                  </div>
-                  <!-- <div v-if="task.tag_ids?.length" class="flex flex-wrap gap-1 mr-7 mt-1">
+                <div class="flex items-start gap-2">
+                  <!-- چک‌باکس و دات اولویت -->
+                  <div
+                    class="relative inline-flex flex-shrink-0 mt-1"
+                    :title="priorityLabel(task.priority)"
+                  >
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border border-[#B7D8C6] cursor-pointer accent-[#219653]"
+                      :checked="task.status === 'done'"
+                      @click.stop="toggleTaskStatus(task)"
+                    />
                     <span
-                      v-for="id in task.tag_ids"
-                      :key="id"
-                      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                      :style="{ backgroundColor: (tagMap[id]?.color || '#e2e8f0') + '30', color: tagMap[id]?.color || '#475569', border: '1px solid ' + (tagMap[id]?.color || '#e2e8f0') }"
-                    >
-                      {{ tagMap[id]?.name || "?" }}
-                    </span>
-                  </div> -->
-                  <div class="grid justify-items-start w-full text-left">
+                      class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-white"
+                      :class="priorityDotClass(task.priority)"
+                    ></span>
+                  </div>
+
+                  <!-- عنوان + توضیحات، هر دو دقیقاً از همین نقطه شروع میشن -->
+                  <div
+                    class="flex flex-col items-end w-full min-w-0 text-right"
+                  >
+                    <div class="font-semibold text-slate-800 w-full">
+                      {{ task.title }}
+                    </div>
+
                     <div
-                      class="text-xs text-slate-400 mt-1 line-clamp-1 w-[60%] justify-self-start text-left"
+                      v-if="task.description"
+                      class="task-description-fade text-xs text-slate-400 mt-1 w-full"
                     >
                       {{ task.description }}
                     </div>
                   </div>
                 </div>
               </div>
+              <!-- مسئول -->
+              <div class="col-span-3 flex items-center justify-center">
+                <AssigneeBadge
+                  v-if="getAssigneeIds(task).length <= 1"
+                  :user="getUserById(getAssigneeIds(task)[0])"
+                  :showName="true"
+                  size="sm"
+                  variant="light"
+                  class="flex items-center gap-3"
+                />
 
-              <AssigneeBadge
-                :user="getUserById(task.assignee_id)"
-                :showName="true"
-                size="sm"
-                variant="light"
-                class="col-span-3 flex items-center justify-center gap-3"
-              />
+                <div v-else class="flex items-center flex-row-reverse">
+                  <div
+                    v-for="(uid, idx) in getAssigneeIds(task).slice(0, 3)"
+                    :key="uid"
+                    class="rounded-full ring-2 ring-white"
+                    :style="{
+                      marginRight: idx === 0 ? 0 : '-10px',
+                      zIndex: 10 - idx,
+                    }"
+                    :title="getUserById(uid)?.username || ''"
+                  >
+                    <AssigneeBadge
+                      :user="getUserById(uid)"
+                      :showName="false"
+                      size="sm"
+                      variant="light"
+                    />
+                  </div>
+
+                  <div
+                    v-if="getAssigneeIds(task).length > 3"
+                    class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold flex items-center justify-center ring-2 ring-white"
+                    style="margin-right: -10px; z-index: 1"
+                  >
+                    +{{ getAssigneeIds(task).length - 3 }}
+                  </div>
+                </div>
+              </div>
 
               <!-- Date -->
               <div class="col-span-2 text-center text-sm text-slate-600">
@@ -498,7 +524,18 @@ const handleDeleteTask = async (id: number) => {
     console.error("Delete task error:", error);
   }
 };
-
+// چند مسئولی یا تک‌مسئولی رو یکدست می‌کنه به آرایه‌ای از id ها
+const getAssigneeIds = (task: Task): number[] => {
+  const anyTask = task as any;
+  if (Array.isArray(anyTask.assignee_ids)) return anyTask.assignee_ids;
+  if (Array.isArray(anyTask.assignees)) {
+    return anyTask.assignees.map((a: any) =>
+      typeof a === "object" ? a.id : a,
+    );
+  }
+  return task.assignee_id ? [task.assignee_id] : [];
+};
+console.log(JSON.stringify(filteredTasks.value[0], null, 2));
 // const openEditFromDetail = (task: Task) => {
 //   closeDetailModal();
 //   selectedTask.value = task;
@@ -624,12 +661,21 @@ const scrollToLastTask = () => {
   transition: all 0.3s ease;
   cursor: pointer;
 }
-
+/* توضیحات: یک خط، راست‌چین، محو در انتها به‌جای بریده‌شدن خشک */
+.task-description-fade {
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: right;
+  -webkit-mask-image: linear-gradient(to left, black 75%, transparent 100%);
+  mask-image: linear-gradient(to left, black 75%, transparent 100%);
+}
 .last-task-hint:hover {
-  background: linear-gradient(135deg, #f0fdf4, #dcfce7) !important;
   transform: scale(1.01);
+}
+
+.last-task-hint:hover::before {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
   box-shadow: 0 4px 12px rgba(33, 150, 83, 0.15);
-  border-radius: 12px;
   border: 1px solid rgba(33, 150, 83, 0.2);
 }
 
@@ -732,16 +778,26 @@ const scrollToLastTask = () => {
 }
 
 /* hover */
-.task-row:hover {
-  background: #f9fafb;
+.task-row {
+  position: relative;
+}
+
+.task-row::before {
+  content: "";
+  position: absolute;
+  inset: 0 32px; /* همون فاصله 32px که هدر با px-8 و خط زیرش داره */
+  z-index: -1;
   border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.task-row:hover::before {
+  background: #f9fafb;
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
 }
 
-/* selected */
-.task-selected {
+.task-selected::before {
   border: 1px solid rgba(33, 150, 83, 0.35);
-  border-radius: 12px;
   background: #f0fdf4;
   box-shadow: 0 4px 14px rgba(33, 150, 83, 0.15);
 }

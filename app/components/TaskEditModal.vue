@@ -375,10 +375,9 @@
             {{ errorMessage }}
           </div>
           <!-- بخش گزارش‌ها — فقط در ویرایش نمایش داده می‌شه -->
-          <div
+          <!-- <div
             v-if="props.taskToEdit?.id"
-            class="space-y-3 border-t border-slate-100 pt-6"
-          >
+            class="space-y-3 border-t border-slate-100 pt-6">
             <h3 class="font-bold text-slate-700 flex items-center gap-2">
               <svg
                 class="w-4 h-4 text-[#238A63]"
@@ -395,7 +394,7 @@
               گزارش‌ها
             </h3>
             <TaskComments :task-id="props.taskToEdit.id" />
-          </div>
+          </div> -->
         </form>
       </div>
 

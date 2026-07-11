@@ -285,8 +285,8 @@
             </div>
           </div>
           <!-- بخش گزارش‌ها -->
-          <div class="space-y-3 border-t border-slate-100 pt-6">
-            <h3 class="font-bold text-slate-700 flex items-center gap-2">
+          <div class="space-y-3 border-slate-100 pt-6">
+            <h3 class="font-bold text-slate-700 flex items-center gap-2 border-b py-2">
               <svg
                 class="w-4 h-4 text-[#238A63]"
                 fill="none"

@@ -7,7 +7,7 @@
       در حال بارگذاری...
     </div>
 
-    <div v-else-if="!comments.length" class="text-center text-sm text-slate-400 py-6">
+    <div v-else-if="!comments.length" class=" text-xs text-slate-400 py-2">
       هنوز گزارشی ثبت نشده است.
     </div>
 
