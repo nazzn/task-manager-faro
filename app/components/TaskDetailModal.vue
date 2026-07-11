@@ -143,7 +143,7 @@
             </button>
 
             <!-- برچسب‌ها -->
-            <div class="flex items-center gap-1.5 min-h-[46px] rounded-xl border border-slate-200 bg-white px-3 flex-1 min-w-[100px]">
+            <!-- <div class="flex items-center gap-1.5 min-h-[46px] rounded-xl border border-slate-200 bg-white px-3 flex-1 min-w-[100px]">
               <img
                 src="/icons/taskModal/Label.svg"
                 alt="tags"
@@ -160,7 +160,7 @@
                 </span>
               </template>
               <span v-else class="text-sm text-slate-400">بدون برچسب</span>
-            </div>
+            </div> -->
 
             <!-- اولویت -->
             <div class="w-[143px]">
@@ -339,7 +339,7 @@ import type { Task, Subtask } from "~/stores/taskStore";
 import { useTaskStore } from "~/stores/taskStore";
 import { getUserById } from "~/composables/useUsers";
 import { taskService } from "~/services/taskService";
-type Tag = { id: number; name: string; color?: string }
+// type Tag = { id: number; name: string; color?: string }
 const props = defineProps<{
   task: Task;
   canEdit?: boolean;
@@ -434,23 +434,23 @@ const subtaskPercentClass = computed(() => {
   return "text-slate-400"
 })
 
-const allTags = ref<Tag[]>([])
-const tagMap = computed(() => {
-  const map: Record<number, Tag> = {}
-  for (const tag of allTags.value) {
-    map[tag.id] = tag
-  }
-  return map
-})
+// const allTags = ref<Tag[]>([])
+// const tagMap = computed(() => {
+//   const map: Record<number, Tag> = {}
+//   for (const tag of allTags.value) {
+//     map[tag.id] = tag
+//   }
+//   return map
+// })
 
-onMounted(async () => {
-  try {
-    const res: any = await taskService.getTags()
-    allTags.value = res?.data?.tags ?? res?.data ?? res ?? []
-  } catch (e) {
-    console.error("Failed to load tags:", e)
-  }
-})
+// onMounted(async () => {
+//   try {
+//     const res: any = await taskService.getTags()
+//     allTags.value = res?.data?.tags ?? res?.data ?? res ?? []
+//   } catch (e) {
+//     console.error("Failed to load tags:", e)
+//   }
+// })
 
 const formatDate = (date?: string | null) => {
   if (!date) return null;

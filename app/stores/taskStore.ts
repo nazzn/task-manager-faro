@@ -66,7 +66,7 @@ export interface Task {
 
   parent_id: number | null;
   project_id: number | null;
-  tag_ids: number[];
+  // tag_ids: number[];
 }
 
 export const statusTabs: { label: string; value: TaskStatus; icon: any }[] = [
@@ -132,6 +132,16 @@ export const useTaskStore = defineStore("taskStore", {
       this.searchQuery = query;
     },
 
+    // normalizeTags(task: any) {
+    //   if (task.tags && Array.isArray(task.tags) && !task.tag_ids?.length) {
+    //     task.tag_ids = task.tags.map((t: any) => (t.id != null ? t.id : t));
+    //   }
+    //   if (!Array.isArray(task.tag_ids)) {
+    //     task.tag_ids = [];
+    //   }
+    //   return task;
+    // },
+
     async loadTasks() {
       try {
         const res: any = await taskService.getTasks();
@@ -164,6 +174,7 @@ export const useTaskStore = defineStore("taskStore", {
         console.log("getTask response:", res);
 
         const raw: any = res?.success ? res.data : (res?.data ?? res);
+        // raw = this.normalizeTags(raw);
         this.selectedTask = {
           ...raw,
           subtasks: raw.subTasks ?? raw.subtasks ?? [],
@@ -225,6 +236,13 @@ export const useTaskStore = defineStore("taskStore", {
             }
           }
 
+          // // Sync tags via dedicated endpoint
+          // if (Array.isArray(payload.tag_ids)) {
+          //   await taskService.syncTaskTags(createdTask.id, payload.tag_ids).catch(e => {
+          //     console.error("Sync tags error on create:", e);
+          //   });
+          // }
+
           // Create subtasks as tasks with parent_id
           if (subtasks?.length) {
             const activeSubtasks = subtasks.filter((s: any) => s.title?.trim());
@@ -238,7 +256,7 @@ export const useTaskStore = defineStore("taskStore", {
                 parent_id: createdTask.id,
                 due_date: createdTask.due_date,
                 project_id: createdTask.project_id,
-                tag_ids: createdTask.tag_ids ?? [],
+                // tag_ids: createdTask.tag_ids ?? [],
               });
             }
           }
@@ -247,6 +265,10 @@ export const useTaskStore = defineStore("taskStore", {
           createdTask = await this.loadTask(createdTask.id);
 
           if (createdTask) {
+            // // Ensure tag_ids from payload are preserved on the task object
+            // if (Array.isArray(payload.tag_ids)) {
+            //   createdTask.tag_ids = [...payload.tag_ids];
+            // }
             this.tasks.unshift(createdTask);
           }
           return createdTask;
@@ -288,6 +310,13 @@ export const useTaskStore = defineStore("taskStore", {
             }
           }
 
+          // // Sync tags via dedicated endpoint
+          // if (Array.isArray(payload.tag_ids)) {
+          //   await taskService.syncTaskTags(id, payload.tag_ids).catch(e => {
+          //     console.error("Sync tags error on update:", e);
+          //   });
+          // }
+
           // Sync subtasks as tasks with parent_id
           if (subtasks) {
             const subRes: any = await taskService.getSubtasks(id);
@@ -314,7 +343,7 @@ export const useTaskStore = defineStore("taskStore", {
                   parent_id: id,
                   due_date: updatedTask.due_date,
                   project_id: updatedTask.project_id,
-                  tag_ids: updatedTask.tag_ids ?? [],
+                  // tag_ids: updatedTask.tag_ids ?? [],
                 });
               }
             }
@@ -344,13 +373,20 @@ export const useTaskStore = defineStore("taskStore", {
           // Reload task
           updatedTask = await this.loadTask(id);
 
-          const index = this.tasks.findIndex((t) => t.id === id);
-          if (index !== -1 && updatedTask) {
-            this.tasks[index] = updatedTask;
-          }
+          if (updatedTask) {
+            // // Ensure tag_ids from payload are preserved on the task object
+            // if (Array.isArray(payload.tag_ids)) {
+            //   updatedTask.tag_ids = [...payload.tag_ids];
+            // }
 
-          if (this.selectedTask && this.selectedTask.id === id && updatedTask) {
-            this.selectedTask = updatedTask;
+            const index = this.tasks.findIndex((t) => t.id === id);
+            if (index !== -1) {
+              this.tasks[index] = updatedTask;
+            }
+
+            if (this.selectedTask && this.selectedTask.id === id) {
+              this.selectedTask = updatedTask;
+            }
           }
 
           return updatedTask;
@@ -390,7 +426,7 @@ export const useTaskStore = defineStore("taskStore", {
           parent_id: taskId,
           due_date: parentTask.due_date,
           project_id: parentTask.project_id,
-          tag_ids: parentTask.tag_ids ?? [],
+          // tag_ids: parentTask.tag_ids ?? [],
         });
         // Reload parent's subtasks
         const subRes: any = await taskService.getSubtasks(taskId);

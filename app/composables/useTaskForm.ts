@@ -12,7 +12,7 @@ export type TaskForm = {
   status: TaskStatus;
   subtasks: Subtask[];
   attachments: Attachment[];
-  tag_ids: number[];
+  // tag_ids: number[];
 };
 
 type UseTaskFormOptions = {
@@ -62,7 +62,7 @@ function createDefaultForm(): TaskForm {
     status: "todo",
     subtasks: [],
     attachments: [],
-    tag_ids: [],
+    // tag_ids: [],
   };
 }
 
@@ -130,7 +130,12 @@ export function useTaskForm(options: UseTaskFormOptions = {}) {
               order: item.order ?? index + 1,
             }))
           : [newSubtask(1)],
-      tag_ids: Array.isArray((task as any).tag_ids) ? [...(task as any).tag_ids] : [],
+      // tag_ids: (() => {
+      //   const raw: any = task as any;
+      //   if (Array.isArray(raw.tag_ids)) return [...raw.tag_ids];
+      //   if (Array.isArray(raw.tags)) return raw.tags.map((t: any) => (t.id != null ? t.id : t));
+      //   return [];
+      // })(),
     };
 
     clearErrors();
@@ -265,7 +270,7 @@ export function useTaskForm(options: UseTaskFormOptions = {}) {
       status: taskForm.value.status,
       parent_id: null,
       project_id: null,
-      tag_ids: taskForm.value.tag_ids,
+      // tag_ids: taskForm.value.tag_ids,
       subtasks: taskForm.value.subtasks
         .filter((s) => s.title.trim())
         .map((x, i) => ({

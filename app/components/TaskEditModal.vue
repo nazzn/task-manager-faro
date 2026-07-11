@@ -166,7 +166,7 @@
             >
 
             <!-- Tags -->
-            <TagSelector v-model="taskForm.tag_ids" />
+            <!-- <TagSelector v-model="taskForm.tag_ids" /> -->
 
             <!-- Checklist Toggle -->
             <button

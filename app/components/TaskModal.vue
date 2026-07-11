@@ -157,7 +157,7 @@
               </span>
             </div>
             <!-- Tags -->
-            <TagSelector v-model="taskForm.tag_ids" />
+            <!-- <TagSelector v-model="taskForm.tag_ids" /> -->
 
             <!-- Checklist Toggle -->
             <button
@@ -399,7 +399,7 @@ import type { Task, Subtask, TaskStatus } from "~/stores/taskStore";
 import { useTaskForm } from "~/composables/useTaskForm";
 import { useRole } from "~/composables/useRole";
 const { canCreateTask } = useRole();
-const { USERS } = useUsers();
+const { USERS, fetchUsers } = useUsers();
 
 const isDatePickerOpen = ref(false);
 const tempDateValue = ref<string | null>(null);
@@ -549,7 +549,10 @@ const toggleSubtasks = () => {
 const toggleScroll = (lock: boolean) => {
   document.body.style.overflow = lock ? "hidden" : "";
 };
-onMounted(() => toggleScroll(true));
+onMounted(() => {
+  toggleScroll(true);
+  fetchUsers(true);
+});
 onUnmounted(() => toggleScroll(false));
 
 /* Submit */

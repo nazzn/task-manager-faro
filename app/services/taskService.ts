@@ -51,15 +51,23 @@ async deleteAttachment(attachmentId: number) {
   return request(`/api/attachments/${attachmentId}`, { method: 'DELETE' })
 },
 
-async getTags() {
-    const { request } = useApi()
-    return request('/api/tags', { method: 'GET' })
-  },
+// async getTags() {
+//     const { request } = useApi()
+//     return request('/api/tags', { method: 'GET' })
+//   },
 
-  async createTag(payload: { name: string; color?: string }) {
-    const { request } = useApi()
-    return request('/api/tags', { method: 'POST', body: payload })
-  },
+//   async syncTaskTags(taskId: number, tagIds: number[]) {
+//     const { request } = useApi()
+//     return request(`/api/tasks/${taskId}/tags`, {
+//       method: 'POST',
+//       body: { tag_ids: tagIds }
+//     })
+//   },
+
+//   async createTag(payload: { name: string; color?: string }) {
+//     const { request } = useApi()
+//     return request('/api/tags', { method: 'POST', body: payload })
+//   },
 
   async getComments(taskId: number) {
   const { request } = useApi()
@@ -86,4 +94,5 @@ async deleteComment(commentId: number) {
   const { request } = useApi()
   return request(`/api/comments/${commentId}`, { method: 'DELETE' })
 },
+
 }

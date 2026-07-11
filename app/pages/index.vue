@@ -101,6 +101,16 @@
                       </div>
                     </div>
                   </div>
+                  <!-- <div v-if="task.tag_ids?.length" class="flex flex-wrap gap-1 mr-7 mt-1">
+                    <span
+                      v-for="id in task.tag_ids"
+                      :key="id"
+                      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                      :style="{ backgroundColor: (tagMap[id]?.color || '#e2e8f0') + '30', color: tagMap[id]?.color || '#475569', border: '1px solid ' + (tagMap[id]?.color || '#e2e8f0') }"
+                    >
+                      {{ tagMap[id]?.name || "?" }}
+                    </span>
+                  </div> -->
                   <div class="grid justify-items-start w-full text-left">
                     <div
                       class="text-xs text-slate-400 mt-1 line-clamp-1 w-[60%] justify-self-start text-left"
@@ -292,10 +302,22 @@ import { storeToRefs } from "pinia";
 import { useTaskStore, type Task } from "~/stores/taskStore";
 import { useRole } from "~/composables/useRole";
 import { getUserById } from "~/composables/useUsers";
+import { taskService } from "~/services/taskService";
 import InfinityScroll from "~/components/InfinityScroll.vue";
 import TaskDetailModal from "~/components/TaskDetailModal.vue";
 import TaskEditModal from "~/components/TaskEditModal.vue";
 import TaskModal from "~/components/TaskModal.vue";
+
+// type Tag = { id: number; name: string; color?: string }
+
+// const allTags = ref<Tag[]>([])
+// const tagMap = computed(() => {
+//   const map: Record<number, Tag> = {}
+//   for (const tag of allTags.value) {
+//     map[tag.id] = tag
+//   }
+//   return map
+// })
 
 const taskStore = useTaskStore();
 const { canCreateTask, canEditTask, canDeleteTask } = useRole();
@@ -405,6 +427,13 @@ watch(filteredTasks, async () => {
 
 // ========== Lifecycle ==========
 onMounted(async () => {
+  // try {
+  //   const res: any = await taskService.getTags()
+  //   allTags.value = res?.data?.tags ?? res?.data ?? res ?? []
+  // } catch (e) {
+  //   console.error("Failed to load tags:", e)
+  // }
+
   try {
     await taskStore.loadTasks();
     console.log("Tasks after load:", taskStore.tasks);

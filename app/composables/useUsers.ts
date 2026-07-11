@@ -18,20 +18,25 @@ function normalizeUsers(data: any): User[] {
     list = data.users
   }
 
-  return list.map((u: any) => ({
-    id: typeof u.id === "string" ? parseInt(u.id, 10) : u.id,
-    username: u.username ?? "",
-    role: u.role ?? "user",
-  }))
+  return list
+    .filter((u: any) => u.id != null)
+    .map((u: any) => ({
+      id: typeof u.id === "string" ? parseInt(u.id, 10) : u.id,
+      username: u.username ?? "",
+      role: u.role ?? "user",
+    }))
+    .filter((u) => typeof u.id === "number" && !isNaN(u.id) && u.id > 0)
 }
 
-export async function fetchUsers() {
-  if (fetched) return
+export async function fetchUsers(force = false) {
+  if (fetched && !force) return
+  if (force) fetched = false
   fetched = true
   try {
     const data = await $fetch("/api/users")
     USERS.value = normalizeUsers(data)
   } catch {
+    fetched = false
     USERS.value = []
   }
 }
