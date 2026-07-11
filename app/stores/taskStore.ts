@@ -147,15 +147,15 @@ export const useTaskStore = defineStore("taskStore", {
         const res: any = await taskService.getTasks();
 
         // ساختار پاسخ: { success: true, data: { tasks: [...], pagination: {...} } }
+        let raw: any[] = [];
         if (res?.success && Array.isArray(res?.data?.tasks)) {
-          this.tasks = res.data.tasks;
+          raw = res.data.tasks;
         } else if (Array.isArray(res?.data)) {
-          this.tasks = res.data;
+          raw = res.data;
         } else if (Array.isArray(res)) {
-          this.tasks = res;
-        } else {
-          this.tasks = [];
+          raw = res;
         }
+        this.tasks = raw.filter((t: any) => t.parent_id == null);
 
         console.log("Tasks loaded:", this.tasks.length);
       } catch (error: any) {
@@ -269,7 +269,9 @@ export const useTaskStore = defineStore("taskStore", {
             // if (Array.isArray(payload.tag_ids)) {
             //   createdTask.tag_ids = [...payload.tag_ids];
             // }
-            this.tasks.unshift(createdTask);
+            if (createdTask.parent_id == null) {
+              this.tasks.unshift(createdTask);
+            }
           }
           return createdTask;
         } else {
