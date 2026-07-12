@@ -315,6 +315,15 @@
         @close="closeEditModal"
         @update="handleUpdate"
     /></Teleport>
+    <ConfirmModal
+      v-if="showDeleteModal"
+      title="حذف وظیفه"
+      message="آیا از حذف این وظیفه مطمئن هستید؟"
+      confirm-text="حذف"
+      cancel-text="انصراف"
+      @confirm="confirmDelete"
+      @cancel="showDeleteModal = false"
+    />
   </div>
 </template>
 
@@ -336,6 +345,7 @@ import InfinityScroll from "~/components/InfinityScroll.vue";
 import TaskDetailModal from "~/components/TaskDetailModal.vue";
 import TaskEditModal from "~/components/TaskEditModal.vue";
 import TaskModal from "~/components/TaskModal.vue";
+import ConfirmModal from "~/components/ConfirmModal.vue";
 
 // type Tag = { id: number; name: string; color?: string }
 
@@ -515,17 +525,22 @@ const handleEditTask = (task: Task) => {
 };
 
 const handleDeleteTask = async (id: number) => {
-  if (!confirm("حذف این وظیفه؟")) return;
+  taskToDeleteId.value = id;
+  showDeleteModal.value = true;
+};
 
+const confirmDelete = async () => {
+  if (taskToDeleteId.value === null) return;
+  showDeleteModal.value = false;
   try {
-    await taskStore.deleteTask(id);
-
+    await taskStore.deleteTask(taskToDeleteId.value);
     showDetailModal.value = false;
     taskStore.clearSelectedTask();
     await taskStore.loadTasks();
   } catch (error) {
     console.error("Delete task error:", error);
   }
+  taskToDeleteId.value = null;
 };
 // چند مسئولی یا تک‌مسئولی رو یکدست می‌کنه به آرایه‌ای از id ها
 const getAssigneeIds = (task: Task): number[] => {
@@ -623,6 +638,8 @@ const priorityDotClass = (p: Task["priority"]) => {
 const showCreateModal = ref(false);
 const showDetailModal = ref(false);
 const showEditModal = ref(false);
+const showDeleteModal = ref(false);
+const taskToDeleteId = ref<number | null>(null);
 const selectedTask = ref<Task | null>(null);
 
 const openTaskDetail = async (taskId: number) => {
