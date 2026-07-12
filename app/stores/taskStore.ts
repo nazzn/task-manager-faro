@@ -95,6 +95,8 @@ export const useTaskStore = defineStore("taskStore", {
 
       if (state.statusFilter) {
         result = result.filter((t) => t.status === state.statusFilter);
+      } else {
+        result = result.filter((t) => t.status !== "done");
       }
       if (state.searchQuery.trim()) {
         const q = state.searchQuery.toLowerCase();
