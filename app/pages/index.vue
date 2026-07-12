@@ -42,13 +42,13 @@
     >
       <!-- Header -->
       <div
-      class="table-header grid grid-cols-12 px-8 py-5 text-sm text-[#4B5563] font-semibold flex-shrink-0"
+        class="table-header grid grid-cols-12 px-8 py-5 text-sm text-[#4B5563] font-semibold flex-shrink-0"
       >
         <div class="col-span-4">
           <!-- استفاده از flex و gap دقیقاً مشابه ردیف‌های پایین -->
           <div class="flex items-center gap-2">
             <!-- این div فضای اشغال شده توسط چک‌باکس را در هر رزولوشنی دقیقاً شبیه‌سازی می‌کند -->
-            <div class="w-5 h-4 flex-shrink-0"></div>
+            <div class="w-[10px] h-4 flex-shrink-0"></div>
             <span class="truncate text-right w-full">عنوان وظیفه</span>
           </div>
         </div>
@@ -64,7 +64,7 @@
           ref="scrollContainer"
           class="absolute inset-0 overflow-y-auto py-2 scroll-right"
         >
-         <div class="divide-y divide-slate-100 rounded-xl pb-4 content-rtl">
+          <div class="divide-y divide-slate-100 rounded-xl pb-2 content-rtl px-4">
             <div
               v-for="(task, index) in paginatedTasks"
               :key="task.id"
@@ -123,7 +123,7 @@
                   :showName="true"
                   size="sm"
                   variant="light"
-                  class="flex items-center gap-3"
+                  class="flex items-center"
                 />
 
                 <div v-else class="flex items-center flex-row-reverse">
@@ -279,12 +279,15 @@
     </section>
 
     <!-- Modals -->
-    <TaskModal
-      v-if="showCreateModal && canCreateTask"
-      :task-to-edit="null"
-      :on-save="handleSave"
-      @close="closeCreateModal"
-    />
+    <Teleport to="body">
+      <TaskModal
+        v-if="showCreateModal && canCreateTask"
+        :task-to-edit="null"
+        :on-save="handleSave"
+        @close="closeCreateModal"
+      />
+    </Teleport>
+
     <div
       v-if="showDetailModal && taskStore.selectedTaskLoading"
       class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40"
@@ -295,23 +298,23 @@
         در حال دریافت جزئیات وظیفه...
       </div>
     </div>
-
-    <TaskDetailModal
-      v-if="showDetailModal && taskStore.selectedTask"
-      :task="taskStore.selectedTask"
-      :can-edit="canEditTask"
-      :can-delete="canDeleteTask"
-      @close="closeTaskDetail"
-      @edit="handleEditTask"
-      @delete="handleDeleteTask"
-    />
-
-    <TaskEditModal
-      v-if="showEditModal && selectedTask"
-      :task-to-edit="selectedTask"
-      @close="closeEditModal"
-      @update="handleUpdate"
-    />
+    <Teleport to="body">
+      <TaskDetailModal
+        v-if="showDetailModal && taskStore.selectedTask"
+        :task="taskStore.selectedTask"
+        :can-edit="canEditTask"
+        :can-delete="canDeleteTask"
+        @close="closeTaskDetail"
+        @edit="handleEditTask"
+        @delete="handleDeleteTask"
+    /></Teleport>
+    <Teleport to="body">
+      <TaskEditModal
+        v-if="showEditModal && selectedTask"
+        :task-to-edit="selectedTask"
+        @close="closeEditModal"
+        @update="handleUpdate"
+    /></Teleport>
   </div>
 </template>
 

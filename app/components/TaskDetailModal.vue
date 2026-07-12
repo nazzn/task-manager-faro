@@ -85,15 +85,11 @@
 
           <!-- ردیف متا (اولویت، مسئول، مهلت، وضعیت، چک‌لیست) -->
           <div class="flex flex-wrap items-start gap-4">
-           
-
             <div class="w-[143px]">
               <div
                 class="rounded-xl border border-slate-200 bg-white px-3 min-h-[46px] py-2 flex items-center"
               >
-                <AssigneeBadge
-                  :user="getUserById(localTask.assignee_id)"
-                />
+                <AssigneeBadge :user="getUserById(localTask.assignee_id)" />
               </div>
             </div>
 
@@ -103,9 +99,9 @@
                 class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3"
               >
                 <img
-                  src="/icons/taskModal/Calendar.svg"
+                  src="/icons/taskModal/calendar.svg"
                   alt="calendar"
-                  class="w-5 h-5 ml-2 grayscale opacity-60"
+                  class="w-5 h-5 ml-2 grayscale opacity-90 flex-shrink-0"
                 />
                 <div class="text-sm text-slate-700 truncate">
                   {{ formatDate(localTask.due_date) || "تعیین نشده" }}
@@ -137,9 +133,10 @@
             >
               چک لیست
               <span class="text-xs text-slate-400"
-                >{{ completedSubtasks }}/{{ localTask.subtasks?.length || 0 }}</span
+                >{{ completedSubtasks }}/{{
+                  localTask.subtasks?.length || 0
+                }}</span
               >
-            
             </button>
 
             <!-- برچسب‌ها -->
@@ -167,16 +164,29 @@
               <div
                 class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800"
               >
-                <svg class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3" />
+                <svg
+                  class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3"
+                  />
                 </svg>
                 <span class="text-slate-700">{{ priorityLabel }}</span>
               </div>
-            </div> 
+            </div>
           </div>
 
           <!-- پنل زیرتسک‌ها (فقط در صورت وجود داده) -->
-          <div v-if="showSubtasks && localTask.subtasks?.length" class="rounded-2xl border border-slate-200 bg-white p-4">
+          <div
+            v-if="showSubtasks && localTask.subtasks?.length"
+            class="rounded-2xl border border-slate-200 bg-white p-4"
+          >
             <div
               class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3"
             >
@@ -185,10 +195,14 @@
                 >{{ completedSubtasks }}/{{ localTask.subtasks.length }}</span
               >
             </div>
-            <div class="w-full h-1.5 bg-slate-100 rounded-full mb-4 overflow-hidden">
+            <div
+              class="w-full h-1.5 bg-slate-100 rounded-full mb-4 overflow-hidden"
+            >
               <div
                 class="h-full rounded-full transition-all duration-300"
-                :class="subtaskPercent === 100 ? 'bg-emerald-500' : 'bg-amber-500'"
+                :class="
+                  subtaskPercent === 100 ? 'bg-emerald-500' : 'bg-amber-500'
+                "
                 :style="{ width: subtaskPercent + '%' }"
               ></div>
             </div>
@@ -248,7 +262,9 @@
                     : '',
                 ]"
               >
-                <span class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600">
+                <span
+                  class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600"
+                >
                   {{ getFileExtension(att.name) }}
                 </span>
                 <span
@@ -286,7 +302,9 @@
           </div>
           <!-- بخش گزارش‌ها -->
           <div class="space-y-3 border-slate-100 pt-6">
-            <h3 class="font-bold text-slate-700 flex items-center gap-2 border-b py-2">
+            <h3
+              class="font-bold text-slate-700 flex items-center gap-2 border-b py-2"
+            >
               <svg
                 class="w-4 h-4 text-[#238A63]"
                 fill="none"
@@ -318,9 +336,7 @@
       </div>
 
       <!-- Footer با دکمه بستن -->
-      <footer
-        class="p-6 bg-slate-50/80 border-t flex justify-center"
-      >
+      <footer class="p-6 bg-slate-50/80 border-t flex justify-center">
         <button
           type="button"
           class="px-8 py-3 rounded-xl text-sm font-bold bg-[#F3F4F6] text-slate-500 hover:bg-slate-200 transition-colors"
@@ -419,20 +435,20 @@ const priorityLabel = computed(() => {
   return localTask.value.priority || "نامشخص";
 });
 
-const showSubtasks = ref(true)
+const showSubtasks = ref(true);
 
-const completedSubtasks = computed(() =>
-  localTask.value.subtasks?.filter(s => s.is_completed).length ?? 0
-)
+const completedSubtasks = computed(
+  () => localTask.value.subtasks?.filter((s) => s.is_completed).length ?? 0,
+);
 const subtaskPercent = computed(() => {
-  const total = localTask.value.subtasks?.length ?? 0
-  return total ? Math.round((completedSubtasks.value / total) * 100) : 0
-})
+  const total = localTask.value.subtasks?.length ?? 0;
+  return total ? Math.round((completedSubtasks.value / total) * 100) : 0;
+});
 const subtaskPercentClass = computed(() => {
-  if (subtaskPercent.value === 100) return "text-emerald-600"
-  if (subtaskPercent.value >= 50) return "text-amber-600"
-  return "text-slate-400"
-})
+  if (subtaskPercent.value === 100) return "text-emerald-600";
+  if (subtaskPercent.value >= 50) return "text-amber-600";
+  return "text-slate-400";
+});
 
 // const allTags = ref<Tag[]>([])
 // const tagMap = computed(() => {
@@ -465,14 +481,14 @@ const formatDate = (date?: string | null) => {
 };
 
 const toggleSubtask = async (sub: Subtask) => {
-  const newStatus = sub.is_completed ? "todo" : "done"
+  const newStatus = sub.is_completed ? "todo" : "done";
   try {
-    await taskService.updateTask(sub.id, { status: newStatus })
-    sub.is_completed = !sub.is_completed
+    await taskService.updateTask(sub.id, { status: newStatus });
+    sub.is_completed = !sub.is_completed;
   } catch (e) {
-    console.error("Failed to toggle subtask:", e)
+    console.error("Failed to toggle subtask:", e);
   }
-}
+};
 
 const getFileExtension = (name: string) => {
   const parts = name?.split(".") ?? [];

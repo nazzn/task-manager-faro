@@ -67,8 +67,6 @@
 
           <!-- META ROW -->
           <div class="flex flex-wrap items-start gap-4">
-          
-
             <AssigneeSelector
               v-model="taskForm.assignee_id"
               :users="userList"
@@ -76,36 +74,39 @@
             />
 
             <!-- Deadline -->
-            <div class="w-[143px] relative border rounded-xl p-2">
+            <div class="w-[143px] relative">
+              <div
+                class="relative flex items-center w-full h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#238A63] focus-within:border-[#238A63]"
+                @click="editDueDateInput?.focus()"
+              >
+                <img
+                  src="/icons/taskModal/calendar.svg"
+                  alt="calendar"
+                  class="w-5 h-5 ml-2 grayscale opacity-90 flex-shrink-0"
+                />
+
+                <input
+                  id="edit-due-date-input"
+                  ref="editDueDateInput"
+                  type="text"
+                  readonly
+                  placeholder="تاریخ"
+                  class="w-full bg-transparent text-sm text-right truncate outline-none cursor-pointer text-slate-700 placeholder:text-slate-400"
+                />
+              </div>
+
               <client-only>
                 <date-picker
                   v-model="taskForm.due_date"
                   format="YYYY-MM-DD"
                   display-format="jYYYY/jMM/jDD"
                   color="#238A63"
-                  custom-input
                   auto-submit
-                >
-                  <template #input="{ value, open }">
-                    <div
-                      @click="open"
-                      class="relative flex items-center w-full h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200"
-                    >
-                      <img
-                        src="/icons/taskModal/Calendar.svg"
-                        alt="calendar"
-                        class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
-                      />
-                      <div
-                        class="text-sm truncate w-full"
-                        :class="value ? 'text-slate-700' : 'text-slate-400'"
-                      >
-                        {{ value || "تاریخ" }}
-                      </div>
-                    </div>
-                  </template>
-                </date-picker>
+                  convert-numbers
+                  custom-input="#edit-due-date-input"
+                />
               </client-only>
+
               <span v-if="endDateError" class="text-xs text-red-500 mt-1 block">
                 {{ endDateError }}
               </span>
@@ -183,13 +184,24 @@
               }}</span>
             </button>
 
-  <!-- Priority -->
+            <!-- Priority -->
             <div class="w-[143px] relative">
               <div
                 class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
-                v-click-outside="closePriorityDropdown">
-                <svg class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3" />
+                v-click-outside="closePriorityDropdown"
+              >
+                <svg
+                  class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3"
+                  />
                 </svg>
 
                 <button
@@ -225,15 +237,13 @@
                 </div>
               </div>
             </div>
-
-
-
-
-
           </div>
 
           <!-- Subtasks Panel -->
-          <div v-if="showSubtasks" class="rounded-2xl border border-slate-200 bg-white p-4 mt-4">
+          <div
+            v-if="showSubtasks"
+            class="rounded-2xl border border-slate-200 bg-white p-4 mt-4"
+          >
             <div
               class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3"
             >
@@ -316,7 +326,9 @@
                 :key="idx"
                 class="group relative w-[40%] flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5"
               >
-                <span class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600">
+                <span
+                  class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600"
+                >
                   {{ getFileExtension(att.name) }}
                 </span>
                 <span
@@ -432,6 +444,8 @@ const { USERS } = useUsers();
 const props = defineProps<{
   taskToEdit: Task;
 }>();
+
+const editDueDateInput = ref<HTMLInputElement | null>(null);
 
 const emit = defineEmits<{
   (e: "close"): void;
@@ -591,7 +605,7 @@ onUnmounted(() => toggleScroll(false));
 const handleSubmit = async () => {
   if (!canEditTask.value) {
     emit("close");
-    return
+    return;
   }
 
   taskForm.value.subtasks = taskForm.value.subtasks.filter((s) =>
@@ -690,6 +704,17 @@ const handleCancel = () => {
 :deep(.vpd-main) {
   --vpd-accent-color: #238a63; /* سبز برند شما */
   --vpd-selected-bg: #238a63;
+}
+
+/* اصلاح رنگ پلیس‌هولدر به صورت تضمینی */
+#due-date-input::placeholder {
+  color: #475569 !important; /* رنگ slate-600 برای خوانایی عالی */
+  opacity: 1 !important; /* رفع باگ کم‌رنگ نشان دادن در مرورگر فایرفاکس */
+}
+
+/* اگر خواستید همرنگ تم سبز شود */
+#due-date-input:focus::placeholder {
+  color: #238A63 !important;
 }
 
 /* برای حذف سایه و حاشیه‌های اضافه خود پکیج که با دیزاین شما نمی‌خواند */

@@ -71,42 +71,46 @@
 
             <!-- Reminder -->
             <div class="hover:bg-slate-50">
-              <div class="w-[143px] border rounded-xl p-2">
+              <div class="w-[143px]">
+                <!-- اینپوت دلخواه با استایل و آیکون خودت -->
+                <div
+                  class="relative flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#238A63] focus-within:border-[#238A63]"
+                  @click="dueDateInput?.focus()"
+                >
+                  <img
+                    src="/icons/taskModal/calendar.svg"
+                    alt="calendar"
+                    class="w-5 h-5 ml-2 opacity-90 flex-shrink-0"
+                  />
+
+                  <input
+                    id="due-date-input"
+                    ref="dueDateInput"
+                    type="text"
+                    readonly
+                    placeholder="زمان یادآوری"
+                    class="w-full bg-transparent text-sm text-right truncate outline-none cursor-pointer text-slate-700 placeholder:text-slate-400"
+                  />
+                  
+                </div>
+
                 <client-only>
                   <date-picker
                     v-model="taskForm.due_date"
                     format="YYYY-MM-DD"
                     display-format="jYYYY/jMM/jDD"
                     auto-submit
-                    custom-input
-                  >
-                    <template #input="{ value, open }">
-                      <div
-                        @click="open"
-                        class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#238A63] focus-within:border-[#238A63]"
-                      >
-                        <img
-                          src="/icons/taskModal/calendar.svg"
-                          alt="calendar"
-                          class="w-5 h-5 ml-2 opacity-60 flex-shrink-0"
-                        />
-
-                        <span
-                          class="text-sm w-full text-right truncate"
-                          :class="value ? 'text-slate-700' : 'text-slate-400'"
-                        >
-                          {{ value ? value : "زمان یادآوری" }}
-                        </span>
-                      </div>
-                    </template>
-                  </date-picker>
+                    color="#219653"
+                    convert-numbers
+                    custom-input="#due-date-input"
+                  />
                 </client-only>
               </div>
+
               <span v-if="endDateError" class="text-xs text-red-500 mt-1 block">
                 {{ endDateError }}
               </span>
             </div>
-          
 
             <!-- Status -->
             <div class="w-[143px] relative">
@@ -173,14 +177,24 @@
             <span v-if="subtasksError" class="text-xs text-red-500 block">
               {{ subtasksError }}
             </span>
-              <!-- Priority -->
+            <!-- Priority -->
             <div class="w-[143px] relative">
               <div
                 class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
                 v-click-outside="closePriorityDropdown"
               >
-                <svg class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3" />
+                <svg
+                  class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 3v4M5 3h4M5 3l4 4m6-4v4m0-4h4m0 0l-4 4m-6 8l-2 3h4l-2 3m6-6l-2 3h4l-2 3"
+                  />
                 </svg>
 
                 <button
@@ -310,7 +324,9 @@
                 :key="idx"
                 class="group relative w-[40%] flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5"
               >
-                <span class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600">
+                <span
+                  class="flex-shrink-0 rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-slate-600"
+                >
                   {{ getFileExtension(att.name) }}
                 </span>
                 <span
@@ -371,7 +387,7 @@
 
       <!-- Footer -->
       <footer
-        class="p-6 bg-slate-50/80 border-t  flex flex-col-reverse sm:flex-row gap-3 justify-center"
+        class="p-6 bg-slate-50/80 border-t flex flex-col-reverse sm:flex-row gap-3 justify-center"
       >
         <button
           type="button"
@@ -400,7 +416,7 @@ import { useTaskForm } from "~/composables/useTaskForm";
 import { useRole } from "~/composables/useRole";
 const { canCreateTask } = useRole();
 const { USERS, fetchUsers } = useUsers();
-
+const dueDateInput = ref<HTMLInputElement | null>(null);
 const isDatePickerOpen = ref(false);
 const tempDateValue = ref<string | null>(null);
 const datePickerRef = ref(null);
@@ -559,7 +575,7 @@ onUnmounted(() => toggleScroll(false));
 const handleSubmit = async () => {
   if (!canCreateTask.value) {
     emit("close");
-    return
+    return;
   }
 
   const files = attachmentsLocal.value
@@ -662,6 +678,17 @@ const submitButtonText = computed(() =>
   --vpd-accent-color: #238a63; 
   --vpd-selected-bg: #238a63;
 } */
+
+/* اصلاح رنگ پلیس‌هولدر به صورت تضمینی */
+#due-date-input::placeholder {
+  color: #475569 !important; /* رنگ slate-600 برای خوانایی عالی */
+  opacity: 1 !important; /* رفع باگ کم‌رنگ نشان دادن در مرورگر فایرفاکس */
+}
+
+/* اگر خواستید همرنگ تم سبز شود */
+#due-date-input:focus::placeholder {
+  color: #238A63 !important;
+}
 
 .vpd-main {
   background-color: red;
