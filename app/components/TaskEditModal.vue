@@ -217,21 +217,21 @@
           <div v-if="showSubtasks" class="rounded-2xl border border-slate-200 bg-white p-4 mt-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
               <h3 class="font-bold text-slate-700">چک لیست</h3>
-              <button
-                type="button"
-                class="text-xl font-bold text-[#238A63] hover:text-[#1b6d4e]"
-                @click="addSubtask()"
-              >
-                +
-              </button>
             </div>
-            <div v-if="taskForm.subtasks.length" class="space-y-2">
+            <div class="space-y-2">
               <div
                 v-for="(s, i) in taskForm.subtasks"
                 :key="s.id"
                 class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition group"
               >
-                <input v-model="s.is_completed" type="checkbox" >
+                <button
+                  v-if="i === taskForm.subtasks.length - 1"
+                  type="button"
+                  class="w-5 h-5 flex items-center justify-center text-[#219653] font-bold text-lg transition shrink-0"
+                  :class="s.title.trim() ? 'hover:text-[#1d854a] cursor-pointer' : 'opacity-30 cursor-default'"
+                  @click="s.title.trim() && addSubtask(s.id)"
+                >+</button>
+                <input v-else v-model="s.is_completed" type="checkbox" class="w-4 h-4 shrink-0">
                 <input
                   v-model="s.title"
                   type="text"
@@ -240,14 +240,11 @@
                 >
                 <button
                   type="button"
-                  class="opacity-0 group-hover:opacity-100 transition text-red-500 hover:text-red-700"
+                  class="opacity-0 group-hover:opacity-100 transition text-red-500 hover:text-red-700 shrink-0"
                   @click="removeSubtask(s.id)"
-                >
-                  ✕
-                </button>
+                >✕</button>
               </div>
             </div>
-            <div v-else class="text-xs text-slate-400 text-center py-4">هنوز آیتمی ثبت نشده</div>
           </div>
 
           <!-- Description -->
@@ -502,6 +499,9 @@ watch(
 );
 
 const toggleSubtasks = () => {
+  if (!showSubtasks.value && !taskForm.value.subtasks.length) {
+    addSubtask();
+  }
   showSubtasks.value = !showSubtasks.value;
 };
 
