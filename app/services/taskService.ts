@@ -42,6 +42,21 @@ export const taskService = {
     return api(`/api/attachments/${attachmentId}`, { method: "DELETE" });
   },
 
+  async getTags() {
+    return api("/api/tags", { method: "GET" });
+  },
+
+  async createTag(payload: { name: string; color?: string }) {
+    return api("/api/tags", { method: "POST", body: payload });
+  },
+
+  async syncTaskTags(taskId: number, tagIds: number[]) {
+    return api(`/api/tasks/${taskId}/tags`, {
+      method: "POST",
+      body: { tag_ids: tagIds },
+    });
+  },
+
   async getComments(taskId: number) {
     return api(`/api/tasks/${taskId}/comments`, { method: "GET" });
   },
