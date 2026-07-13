@@ -49,23 +49,53 @@
         <!-- Date From -->
         <div>
           <label class="block text-xs font-semibold text-slate-500 mb-1.5">از تاریخ</label>
-          <input
-            :value="dateFrom"
-            @input="taskStore.setDateRange(($event.target as HTMLInputElement).value, dateTo)"
-            type="date"
-            class="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:border-[#219653] focus:ring-1 focus:ring-[#219653] outline-none transition-all"
-          >
+          <div class="relative">
+            <input
+              id="advanced-date-from"
+              type="text"
+              readonly
+              :value="dateFrom ? new Date(dateFrom).toLocaleDateString('fa-IR') : ''"
+              placeholder="انتخاب تاریخ"
+              class="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 placeholder:text-slate-400 cursor-pointer outline-none transition-all focus:border-[#219653]"
+            >
+            <client-only>
+              <date-picker
+                v-model="dateFromModel"
+                format="YYYY-MM-DD"
+                display-format="jYYYY/jMM/jDD"
+                auto-submit
+                color="#219653"
+                convert-numbers
+                custom-input="#advanced-date-from"
+              />
+            </client-only>
+          </div>
         </div>
 
         <!-- Date To -->
         <div>
           <label class="block text-xs font-semibold text-slate-500 mb-1.5">تا تاریخ</label>
-          <input
-            :value="dateTo"
-            @input="taskStore.setDateRange(dateFrom, ($event.target as HTMLInputElement).value)"
-            type="date"
-            class="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:border-[#219653] focus:ring-1 focus:ring-[#219653] outline-none transition-all"
-          >
+          <div class="relative">
+            <input
+              id="advanced-date-to"
+              type="text"
+              readonly
+              :value="dateTo ? new Date(dateTo).toLocaleDateString('fa-IR') : ''"
+              placeholder="انتخاب تاریخ"
+              class="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 placeholder:text-slate-400 cursor-pointer outline-none transition-all focus:border-[#219653]"
+            >
+            <client-only>
+              <date-picker
+                v-model="dateToModel"
+                format="YYYY-MM-DD"
+                display-format="jYYYY/jMM/jDD"
+                auto-submit
+                color="#219653"
+                convert-numbers
+                custom-input="#advanced-date-to"
+              />
+            </client-only>
+          </div>
         </div>
       </div>
 
@@ -107,6 +137,20 @@ const {
   dateFrom,
   dateTo,
 } = storeToRefs(taskStore);
+
+const dateFromModel = computed({
+  get: () => dateFrom.value,
+  set: (val: string) => {
+    taskStore.setDateRange(val, dateTo.value);
+  },
+});
+
+const dateToModel = computed({
+  get: () => dateTo.value,
+  set: (val: string) => {
+    taskStore.setDateRange(dateFrom.value, val);
+  },
+});
 
 const users = computed(() => USERS.value);
 
