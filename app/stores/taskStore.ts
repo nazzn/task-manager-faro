@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { taskService } from "~/services/taskService";
 import type { Task, TaskStatus, StatusFilter, Subtask, Comment } from "~/types";
 
+export type PriorityFilter = "low" | "medium" | "high" | null;
+
 export const statusTabs: { label: string; value: TaskStatus; icon: any }[] = [
   { label: "برای انجام", value: "todo", icon: "status.svg" },
   { label: "در حال انجام", value: "doing", icon: "status.svg" },
@@ -17,12 +19,21 @@ export const useTaskStore = defineStore("taskStore", {
     selectedTaskError: "" as string | null,
     statusFilter: null as StatusFilter,
     searchQuery: "",
+    priorityFilter: null as PriorityFilter,
+    assigneeFilter: null as number | null,
+    dateFrom: "",
+    dateTo: "",
+    showAdvancedSearch: false,
     comments: [] as Comment[],
     commentsLoading: false,
     commentsError: null as string | null,
   }),
 
   getters: {
+    hasActiveAdvancedFilters: (state): boolean => {
+      return !!(state.priorityFilter || state.assigneeFilter || state.dateFrom || state.dateTo);
+    },
+
     filteredTasks: (state): Task[] => {
       let result = state.tasks;
 
@@ -37,6 +48,18 @@ export const useTaskStore = defineStore("taskStore", {
           (task) =>
             task.title.toLowerCase().includes(q) || task.description?.toLowerCase().includes(q),
         );
+      }
+      if (state.priorityFilter) {
+        result = result.filter((t) => t.priority === state.priorityFilter);
+      }
+      if (state.assigneeFilter) {
+        result = result.filter((t) => t.assignee_id === state.assigneeFilter);
+      }
+      if (state.dateFrom) {
+        result = result.filter((t) => t.due_date >= state.dateFrom);
+      }
+      if (state.dateTo) {
+        result = result.filter((t) => t.due_date <= state.dateTo);
       }
       const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
       result = [...result].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
@@ -65,6 +88,30 @@ export const useTaskStore = defineStore("taskStore", {
 
     setSearchQuery(query: string) {
       this.searchQuery = query;
+    },
+
+    setPriorityFilter(priority: PriorityFilter) {
+      this.priorityFilter = priority;
+    },
+
+    setAssigneeFilter(assigneeId: number | null) {
+      this.assigneeFilter = assigneeId;
+    },
+
+    setDateRange(from: string, to: string) {
+      this.dateFrom = from;
+      this.dateTo = to;
+    },
+
+    clearAdvancedFilters() {
+      this.priorityFilter = null;
+      this.assigneeFilter = null;
+      this.dateFrom = "";
+      this.dateTo = "";
+    },
+
+    toggleAdvancedSearch() {
+      this.showAdvancedSearch = !this.showAdvancedSearch;
     },
 
     // normalizeTags(task: any) {

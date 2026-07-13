@@ -12,7 +12,11 @@
           + ایجاد وظیفه
         </button>
 
-        <button class="flex items-center gap-2 text-sm text-slate-600 font-medium">
+        <button
+          class="flex items-center gap-2 text-sm font-medium transition-all"
+          :class="showAdvancedSearch ? 'text-[#219653]' : 'text-slate-600 hover:text-slate-800'"
+          @click="taskStore.toggleAdvancedSearch()"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="w-5 h-5"
@@ -28,8 +32,14 @@
             />
           </svg>
           جستجوی پیشرفته
+          <span
+            v-if="hasActiveAdvancedFilters"
+            class="w-2 h-2 rounded-full bg-[#219653]"
+          />
         </button>
       </div>
+
+      <AdvancedSearch />
     </div>
 
     <!-- Table Container -->
@@ -317,6 +327,7 @@ import { useRole } from "~/composables/useRole";
 import { getUserById } from "~/composables/useUsers";
 import { taskService } from "~/services/taskService";
 import InfinityScroll from "~/components/InfinityScroll.vue";
+import AdvancedSearch from "~/components/AdvancedSearch.vue";
 import TaskDetailModal from "~/components/TaskDetailModal.vue";
 import TaskEditModal from "~/components/TaskEditModal.vue";
 import TaskModal from "~/components/TaskModal.vue";
@@ -337,7 +348,7 @@ const taskStore = useTaskStore();
 const { canCreateTask, canEditTask, canDeleteTask } = useRole();
 const { showToast } = useToast();
 
-const { filteredTasks } = storeToRefs(taskStore);
+const { filteredTasks, showAdvancedSearch, hasActiveAdvancedFilters } = storeToRefs(taskStore);
 
 // ========== Responsive Height ==========
 const tableContainer = ref<HTMLElement | null>(null);
