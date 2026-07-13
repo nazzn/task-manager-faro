@@ -115,7 +115,6 @@ export const useTaskStore = defineStore("taskStore", {
       const counts: Record<TaskStatus, number> = {
         todo: 0,
         doing: 0,
-
         done: 0,
       };
       state.tasks.forEach((task) => {

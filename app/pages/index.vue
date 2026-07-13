@@ -608,16 +608,15 @@ const formatDate = (date?: string | null) => {
 const statusLabel = (s: Task["status"]) => {
   if (s === "todo") return "برای انجام";
   if (s === "doing") return "در حال انجام";
-
   if (s === "done") return "تکمیل شده";
   return "نامشخص";
 };
 
 const statusBadgeClass = (s: Task["status"]) => {
-  if (s === "done") return "bg-emerald-50 text-emerald-700 border-emerald-100";
-  if (s === "doing") return "bg-blue-50 text-blue-700 border-blue-100";
+  if (s === "done") return "bg-[#D1FAE5] text-[#10B981] border-emerald-100 w-[97px]";
+  if (s === "doing") return "bg-[#DBEAFE] text-[#3B82F6] border-blue-100 w-[97px]" ;
 
-  return "bg-slate-50 text-slate-700 border-slate-200";
+  return "bg-slate-50 text-slate-700 border-slate-200 w-[97px]";
 };
 
 const priorityLabel = (p: Task["priority"]) => {

@@ -66,7 +66,7 @@
               enter-to-class="transform scale-100 opacity-100"
             >
               <ul
-                v-if="item.label === 'داشبورد' && route.path === '/'"
+                v-if="item.label === 'وظایف' && route.path === '/'"
                 class="mt-2 space-y-1 pr-4"
               >
                 <!-- pr-4 برای این است که زیرمنو کمی جلوتر از منوی اصلی باشد و سلسله مراتب رعایت شود -->
@@ -136,11 +136,11 @@ const projectLabel = computed(() => projectLabelState.value);
 
 /* navigation */
 const items = [
-  { label: "داشبورد", to: "/", icon: "dashboard.svg" },
-  { label: "گزارش", to: "/report", icon: "report.svg" },
-  { label: "تقویم", to: "/calender", icon: "calender.svg" },
-  { label: "پیگیری", to: "/followups", badge: 3, icon: "followups.svg" },
-  { label: "تیم", to: "/team", icon: "team.svg" },
-  { label: "تنظیمات", to: "/settings", icon: "settings.svg" },
+  { label: "وظایف", to: "/", icon: "dashboard.svg" ,badge: 3,},
+  // { label: "گزارش", to: "/report", icon: "report.svg" ,disabled: true },
+  // { label: "تقویم", to: "/calender", icon: "calender.svg",disabled: true },
+  // { label: "پیگیری", to: "/followups", badge: 3, icon: "followups.svg",disabled: true },
+  // { label: "تیم", to: "/team", icon: "team.svg" ,disabled: true},
+  // { label: "تنظیمات", to: "/settings", icon: "settings.svg" ,},
 ];
 </script>
