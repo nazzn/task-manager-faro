@@ -1,73 +1,6 @@
 import { defineStore } from "pinia";
 import { taskService } from "~/services/taskService";
-
-export type TaskStatus = "todo" | "doing" | "done";
-export type StatusFilter = TaskStatus | null;
-
-export type Subtask = {
-  id: number;
-  title: string;
-  is_completed: boolean;
-  order: number;
-};
-
-export type Role = "admin" | "manager" | "user";
-
-export type Attachment = {
-  id?: number | string;
-  name: string;
-  size: number;
-  url?: string;
-  file?: File;
-};
-
-export interface User {
-  id: number;
-  username: string;
-  role: Role;
-}
-export type Comment = {
-  id: number;
-  content: string;
-  created_at: string;
-  updated_at?: string;
-  user?: {
-    id: number;
-    username: string;
-    role: string;
-  };
-  attachment?: {
-    id: number;
-    name: string;
-    size: number;
-  } | null;
-};
-
-export interface Task {
-  id: number;
-  title: string;
-  description?: string;
-
-  status: TaskStatus;
-  priority: "low" | "medium" | "high";
-
-  assignee_id: number;
-
-  due_date: string;
-  start_at: string | null;
-
-  created_at: string;
-
-  subtasks: Subtask[];
-  attachments: Attachment[];
-
-  assignee?: User;
-  createdBy?: User;
-
-  parent_id: number | null;
-  project_id: number | null;
-  // tag_ids: number[];
-}
+import type { Task, TaskStatus, StatusFilter, Subtask, Comment } from "~/types";
 
 export const statusTabs: { label: string; value: TaskStatus; icon: any }[] = [
   { label: "برای انجام", value: "todo", icon: "status.svg" },
@@ -102,8 +35,7 @@ export const useTaskStore = defineStore("taskStore", {
         const q = state.searchQuery.toLowerCase();
         result = result.filter(
           (task) =>
-            task.title.toLowerCase().includes(q) ||
-            task.description?.toLowerCase().includes(q),
+            task.title.toLowerCase().includes(q) || task.description?.toLowerCase().includes(q),
         );
       }
       const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
@@ -173,7 +105,7 @@ export const useTaskStore = defineStore("taskStore", {
       this.selectedTaskError = null;
 
       try {
-        const res = await taskService.getTask(id);
+        const res: any = await taskService.getTask(id);
         console.log("getTask response:", res);
 
         const raw: any = res?.success ? res.data : (res?.data ?? res);
@@ -186,8 +118,7 @@ export const useTaskStore = defineStore("taskStore", {
         // Fetch subtasks from dedicated endpoint
         try {
           const subRes: any = await taskService.getSubtasks(id);
-          const rawSubtasks =
-            subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+          const rawSubtasks = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
           if (Array.isArray(rawSubtasks)) {
             this.selectedTask.subtasks = rawSubtasks;
           }
@@ -199,9 +130,7 @@ export const useTaskStore = defineStore("taskStore", {
       } catch (error: any) {
         console.error("Load task error:", error);
         this.selectedTaskError =
-          error?.data?.message ||
-          error?.message ||
-          "خطا در دریافت جزئیات وظیفه";
+          error?.data?.message || error?.message || "خطا در دریافت جزئیات وظیفه";
         throw error;
       } finally {
         this.selectedTaskLoading = false;
@@ -325,16 +254,11 @@ export const useTaskStore = defineStore("taskStore", {
           // Sync subtasks as tasks with parent_id
           if (subtasks) {
             const subRes: any = await taskService.getSubtasks(id);
-            const rawSubtasks =
-              subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
-            const currentSubtasks: Subtask[] = Array.isArray(rawSubtasks)
-              ? rawSubtasks
-              : [];
+            const rawSubtasks = subRes?.data?.subtasks ?? subRes?.data ?? subRes ?? [];
+            const currentSubtasks: Subtask[] = Array.isArray(rawSubtasks) ? rawSubtasks : [];
             const currentIds = new Set(currentSubtasks.map((s) => s.id));
 
-            const formSubtasks = (subtasks as Subtask[]).filter((s) =>
-              s.title?.trim(),
-            );
+            const formSubtasks = (subtasks as Subtask[]).filter((s) => s.title?.trim());
 
             // Create new subtasks
             for (const sub of formSubtasks) {
@@ -498,9 +422,7 @@ export const useTaskStore = defineStore("taskStore", {
       this.commentsError = null;
       try {
         const res: any = await taskService.getComments(taskId);
-        this.comments = Array.isArray(res?.data)
-          ? res.data
-          : (res?.data?.comments ?? []);
+        this.comments = Array.isArray(res?.data) ? res.data : (res?.data?.comments ?? []);
       } catch (e: any) {
         this.commentsError = e?.message || "خطا در دریافت گزارش‌ها";
       } finally {

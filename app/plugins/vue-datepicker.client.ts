@@ -1,4 +1,4 @@
-// app/plugins/vue-datePicker.ts.ts 
+// app/plugins/vue-datePicker.ts.ts
 
 import Vue3PersianDatetimePicker from "vue3-persian-datetime-picker";
 

@@ -13,11 +13,7 @@ export const normalizeError = (err: any): string => {
     err?.toString?.(); // آخرین تلاش: تبدیل کل شیء به رشته
 
   // ۴. بررسی نهایی برای جلوگیری از بازگشت مقادیر پوچ یا آبجکتهای عجیب
-  if (
-    !message ||
-    typeof message !== "string" ||
-    message.includes("[object Object]")
-  ) {
+  if (!message || typeof message !== "string" || message.includes("[object Object]")) {
     return "مشکلی در برقراری ارتباط با سرور پیش آمد";
   }
 

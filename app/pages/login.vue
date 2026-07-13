@@ -1,12 +1,7 @@
 <!-- app/pages/login.vue -->
 <template>
-  <div
-    class="min-h-screen bg-slate-50 flex items-center justify-center p-4"
-    dir="rtl"
-  >
-    <div
-      class="w-full max-w-md bg-white rounded-3xl shadow-sm border border-slate-200 p-8"
-    >
+  <div class="min-h-screen bg-slate-50 flex items-center justify-center p-4" dir="rtl">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-sm border border-slate-200 p-8">
       <!-- Header -->
       <div class="text-center mb-8">
         <h1 class="text-2xl font-black text-slate-900">ورود به پنل</h1>
@@ -14,33 +9,29 @@
       </div>
 
       <!-- Form -->
-      <form @submit.prevent="handleLogin" class="space-y-5">
+      <form class="space-y-5" @submit.prevent="handleLogin">
         <!-- Username -->
         <div>
-          <label class="block text-sm font-bold text-slate-700 mb-2">
-            نام کاربری  
-          </label>
+          <label class="block text-sm font-bold text-slate-700 mb-2"> نام کاربری </label>
           <input
             v-model="form.username"
             type="text"
             class="w-full h-12 px-4 rounded-2xl border border-slate-200 bg-slate-50 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50"
             placeholder="Username"
             required
-          />
+          >
         </div>
 
         <!-- Password -->
         <div>
-          <label class="block text-sm font-bold text-slate-700 mb-2">
-            رمز عبور
-          </label>
+          <label class="block text-sm font-bold text-slate-700 mb-2"> رمز عبور </label>
           <input
             v-model="form.password"
             type="password"
             class="w-full h-12 px-4 rounded-2xl border border-slate-200 bg-slate-50 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50"
             placeholder="••••••••"
             required
-          />
+          >
         </div>
 
         <!-- Error -->
@@ -52,7 +43,11 @@
         </p>
 
         <!-- Submit -->
-        <button type="submit" :disabled="loading" class="w-full h-12 bg-indigo-600 text-white font-bold rounded-2xl shadow-md hover:bg-indigo-700 transition-all active:scale-[0.98] disabled:opacity-50">
+        <button
+          type="submit"
+          :disabled="loading"
+          class="w-full h-12 bg-indigo-600 text-white font-bold rounded-2xl shadow-md hover:bg-indigo-700 transition-all active:scale-[0.98] disabled:opacity-50"
+        >
           {{ loading ? "در حال بررسی..." : "ورود به سیستم" }}
         </button>
       </form>
@@ -86,15 +81,13 @@ const handleLogin = async (): Promise<void> => {
   error.value = "";
   loading.value = true;
 
-   try {
-    await login(form.username, form.password)
-    await navigateTo("/")
+  try {
+    await login(form.username, form.password);
+    await navigateTo("/");
   } catch (err: any) {
-    error.value = err?.message || "خطا در ورود"
+    error.value = err?.message || "خطا در ورود";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 </script>
-
-

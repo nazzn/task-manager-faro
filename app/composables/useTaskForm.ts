@@ -1,6 +1,6 @@
 // app/composable/useTaskForm.ts
 import { computed, ref, watch, type Ref } from "vue";
-import type { Task, TaskStatus, Attachment, Subtask } from "~/stores/taskStore";
+import type { Task, TaskStatus, Attachment, Subtask } from "~/types";
 
 export type TaskForm = {
   title: string;
@@ -119,7 +119,7 @@ export function useTaskForm(options: UseTaskFormOptions = {}) {
       due_date: task.due_date ?? null,
       priority: (task.priority as "low" | "medium" | "high") ?? "low",
       status: (task.status as TaskStatus) ?? "todo",
-    attachments: Array.isArray(task.attachments) ? [...task.attachments] : [],
+      attachments: Array.isArray(task.attachments) ? [...task.attachments] : [],
 
       subtasks:
         Array.isArray(task.subtasks) && task.subtasks.length > 0
@@ -298,10 +298,7 @@ export function useTaskForm(options: UseTaskFormOptions = {}) {
         nested?.message || err.data?.message || err.response?.data?.message || "";
     } else {
       errorMessage.value =
-        err?.data?.message ||
-        err?.response?.data?.message ||
-        err?.message ||
-        "خطایی رخ داد.";
+        err?.data?.message || err?.response?.data?.message || err?.message || "خطایی رخ داد.";
     }
   }
 

@@ -28,15 +28,9 @@
             "url": {
               "raw": "http://localhost:8080/api/auth/login",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "auth",
-                "login"
-              ]
+              "path": ["api", "auth", "login"]
             }
           },
           "response": []
@@ -54,14 +48,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks"
-              ]
+              "path": ["api", "tasks"]
             }
           },
           "response": []
@@ -74,15 +63,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/12",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "12"
-              ]
+              "path": ["api", "tasks", "12"]
             }
           },
           "response": []
@@ -104,14 +87,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks"
-              ]
+              "path": ["api", "tasks"]
             }
           },
           "response": []
@@ -133,15 +111,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/2",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "2"
-              ]
+              "path": ["api", "tasks", "2"]
             }
           },
           "response": []
@@ -154,15 +126,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/2",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "2"
-              ]
+              "path": ["api", "tasks", "2"]
             }
           },
           "response": []
@@ -175,15 +141,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/trashed",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "trashed"
-              ]
+              "path": ["api", "tasks", "trashed"]
             }
           },
           "response": []
@@ -196,16 +156,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/2/restore",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "2",
-                "restore"
-              ]
+              "path": ["api", "tasks", "2", "restore"]
             }
           },
           "response": []
@@ -223,16 +176,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/12/subtasks",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "12",
-                "subtasks"
-              ]
+              "path": ["api", "tasks", "12", "subtasks"]
             }
           },
           "response": []
@@ -250,16 +196,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/12/comments",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "12",
-                "comments"
-              ]
+              "path": ["api", "tasks", "12", "comments"]
             }
           },
           "response": []
@@ -281,16 +220,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/2/comments",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "2",
-                "comments"
-              ]
+              "path": ["api", "tasks", "2", "comments"]
             }
           },
           "response": []
@@ -312,15 +244,9 @@
             "url": {
               "raw": "http://localhost:8080/api/comments/2",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "comments",
-                "2"
-              ]
+              "path": ["api", "comments", "2"]
             }
           },
           "response": []
@@ -333,15 +259,9 @@
             "url": {
               "raw": "http://localhost:8080/api/comments/2",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "comments",
-                "2"
-              ]
+              "path": ["api", "comments", "2"]
             }
           },
           "response": []
@@ -359,14 +279,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tags",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tags"
-              ]
+              "path": ["api", "tags"]
             }
           },
           "response": []
@@ -388,14 +303,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tags",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tags"
-              ]
+              "path": ["api", "tags"]
             }
           },
           "response": []
@@ -417,16 +327,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/2/tags",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "2",
-                "tags"
-              ]
+              "path": ["api", "tasks", "2", "tags"]
             }
           },
           "response": []
@@ -444,16 +347,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/12/attachments",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "12",
-                "attachments"
-              ]
+              "path": ["api", "tasks", "12", "attachments"]
             }
           },
           "response": []
@@ -477,16 +373,9 @@
             "url": {
               "raw": "http://localhost:8080/api/tasks/12/attachments",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "tasks",
-                "12",
-                "attachments"
-              ]
+              "path": ["api", "tasks", "12", "attachments"]
             }
           },
           "response": []
@@ -499,16 +388,9 @@
             "url": {
               "raw": "http://localhost:8080/api/attachments/2/download",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "attachments",
-                "2",
-                "download"
-              ]
+              "path": ["api", "attachments", "2", "download"]
             }
           },
           "response": []
@@ -521,15 +403,9 @@
             "url": {
               "raw": "http://localhost:8080/api/attachments/2",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8080",
-              "path": [
-                "api",
-                "attachments",
-                "2"
-              ]
+              "path": ["api", "attachments", "2"]
             }
           },
           "response": []
@@ -554,9 +430,7 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [
-          ""
-        ]
+        "exec": [""]
       }
     },
     {
@@ -565,9 +439,7 @@
         "type": "text/javascript",
         "packages": {},
         "requests": {},
-        "exec": [
-          ""
-        ]
+        "exec": [""]
       }
     }
   ]

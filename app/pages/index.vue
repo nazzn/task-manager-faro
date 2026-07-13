@@ -6,15 +6,13 @@
       <div class="flex items-center gap-4">
         <button
           v-if="canCreateTask"
-          @click="openCreate"
           class="h-10 px-4 rounded-xl bg-[#219653] text-white text-sm font-semibold hover:bg-[#1d854a] transition-all"
+          @click="openCreate"
         >
           + ایجاد وظیفه
         </button>
 
-        <button
-          class="flex items-center gap-2 text-sm text-slate-600 font-medium"
-        >
+        <button class="flex items-center gap-2 text-sm text-slate-600 font-medium">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="w-5 h-5"
@@ -48,7 +46,7 @@
           <!-- استفاده از flex و gap دقیقاً مشابه ردیف‌های پایین -->
           <div class="flex items-center gap-2">
             <!-- این div فضای اشغال شده توسط چک‌باکس را در هر رزولوشنی دقیقاً شبیه‌سازی می‌کند -->
-            <div class="w-[10px] h-4 flex-shrink-0"></div>
+            <div class="w-[10px] h-4 flex-shrink-0"/>
             <span class="truncate text-right w-full">عنوان وظیفه</span>
           </div>
         </div>
@@ -60,24 +58,19 @@
 
       <!-- Scrollable Body with Fade Effect -->
       <div class="relative flex-1 overflow-hidden justify-center text-center">
-        <div
-          ref="scrollContainer"
-          class="absolute inset-0 overflow-y-auto py-2 scroll-right"
-        >
+        <div ref="scrollContainer" class="absolute inset-0 overflow-y-auto py-2 scroll-right">
           <div class="divide-y divide-slate-100 rounded-xl pb-2 content-rtl px-4">
             <div
               v-for="(task, index) in paginatedTasks"
               :key="task.id"
-              @click="openTaskDetail(task.id)"
               class="task-row group relative grid grid-cols-12 items-center px-8 py-5 cursor-pointer transition-all duration-200"
               :class="{
-                'last-task-hint':
-                  hasMoreTasks && index === paginatedTasks.length - 1,
+                'last-task-hint': hasMoreTasks && index === paginatedTasks.length - 1,
                 'opacity-50 scale-95':
-                  isLastTaskPartiallyVisible &&
-                  index === paginatedTasks.length - 1,
+                  isLastTaskPartiallyVisible && index === paginatedTasks.length - 1,
                 'task-selected': taskStore.selectedTask?.id === task.id,
               }"
+              @click="openTaskDetail(task.id)"
             >
               <div class="col-span-4">
                 <div class="flex items-start gap-2">
@@ -91,17 +84,15 @@
                       class="w-4 h-4 rounded border border-[#B7D8C6] cursor-pointer accent-[#219653]"
                       :checked="task.status === 'done'"
                       @click.stop="toggleTaskStatus(task)"
-                    />
+                    >
                     <span
                       class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-white"
                       :class="priorityDotClass(task.priority)"
-                    ></span>
+                    />
                   </div>
 
                   <!-- عنوان + توضیحات، هر دو دقیقاً از همین نقطه شروع میشن -->
-                  <div
-                    class="flex flex-col items-end w-full min-w-0 text-right"
-                  >
+                  <div class="flex flex-col items-end w-full min-w-0 text-right">
                     <div class="font-semibold text-slate-800 w-full">
                       {{ task.title }}
                     </div>
@@ -120,7 +111,7 @@
                 <AssigneeBadge
                   v-if="getAssigneeIds(task).length <= 1"
                   :user="getUserById(getAssigneeIds(task)[0])"
-                  :showName="true"
+                  :show-name="true"
                   size="sm"
                   variant="light"
                   class="flex items-center"
@@ -139,7 +130,7 @@
                   >
                     <AssigneeBadge
                       :user="getUserById(uid)"
-                      :showName="false"
+                      :show-name="false"
                       size="sm"
                       variant="light"
                     />
@@ -211,25 +202,17 @@
                   <div class="flex items-center justify-center gap-2">
                     <div
                       class="w-5 h-5 border-2 border-[#219653] border-t-transparent rounded-full animate-spin"
-                    ></div>
-                    <span class="text-sm text-slate-500"
-                      >در حال بارگذاری...</span
-                    >
+                    />
+                    <span class="text-sm text-slate-500">در حال بارگذاری...</span>
                   </div>
                 </div>
-                <div
-                  v-else-if="!hasMoreTasks"
-                  class="py-6 text-center text-sm text-slate-400"
-                >
+                <div v-else-if="!hasMoreTasks" class="py-6 text-center text-sm text-slate-400">
                   ✅ همه تسک‌ها بارگذاری شدند
                 </div>
               </template>
             </InfinityScroll>
 
-            <div
-              v-if="filteredTasks.length === 0"
-              class="py-24 text-center text-slate-400 text-sm"
-            >
+            <div v-if="filteredTasks.length === 0" class="py-24 text-center text-slate-400 text-sm">
               هیچ وظیفه‌ای یافت نشد
             </div>
           </div>
@@ -247,14 +230,14 @@
               transparent
             );
           "
-        ></div>
+        />
 
         <!-- ===== نشانگر فلش در پایین ===== -->
         <button
           v-if="hasMoreTasks && !isLoadingMore"
-          @click="scrollToLastTask"
           class="absolute bottom-2 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-10"
           title="رفتن به آخرین تسک"
+          @click="scrollToLastTask"
         >
           <div
             class="bg-[#219653] text-white rounded-full p-2 shadow-lg hover:bg-[#1d854a] transition-colors"
@@ -292,9 +275,7 @@
       v-if="showDetailModal && taskStore.selectedTaskLoading"
       class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40"
     >
-      <div
-        class="rounded-2xl bg-white px-6 py-4 text-sm font-bold text-slate-700"
-      >
+      <div class="rounded-2xl bg-white px-6 py-4 text-sm font-bold text-slate-700">
         در حال دریافت جزئیات وظیفه...
       </div>
     </div>
@@ -328,16 +309,10 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  onMounted,
-  computed,
-  watch,
-  onBeforeUnmount,
-  nextTick,
-} from "vue";
+import { ref, onMounted, computed, watch, onBeforeUnmount, nextTick } from "vue";
 import { storeToRefs } from "pinia";
-import { useTaskStore, type Task } from "~/stores/taskStore";
+import { useTaskStore } from "~/stores/taskStore";
+import type { Task } from "~/types";
 import { useRole } from "~/composables/useRole";
 import { getUserById } from "~/composables/useUsers";
 import { taskService } from "~/services/taskService";
@@ -429,8 +404,7 @@ const checkLastTaskVisibility = () => {
     Math.max(lastTaskRect.top, containerRect.top);
   const totalHeight = lastTaskRect.height;
 
-  isLastTaskPartiallyVisible.value =
-    visibleHeight < totalHeight * 0.6 && visibleHeight > 0;
+  isLastTaskPartiallyVisible.value = visibleHeight < totalHeight * 0.6 && visibleHeight > 0;
 };
 
 // ========== تابع بارگذاری ==========
@@ -441,10 +415,7 @@ const loadMore = async () => {
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 500));
-    const newCount = Math.min(
-      visibleCount.value + PAGE_SIZE,
-      filteredTasks.value.length,
-    );
+    const newCount = Math.min(visibleCount.value + PAGE_SIZE, filteredTasks.value.length);
     visibleCount.value = newCount;
 
     await nextTick();
@@ -547,9 +518,7 @@ const getAssigneeIds = (task: Task): number[] => {
   const anyTask = task as any;
   if (Array.isArray(anyTask.assignee_ids)) return anyTask.assignee_ids;
   if (Array.isArray(anyTask.assignees)) {
-    return anyTask.assignees.map((a: any) =>
-      typeof a === "object" ? a.id : a,
-    );
+    return anyTask.assignees.map((a: any) => (typeof a === "object" ? a.id : a));
   }
   return task.assignee_id ? [task.assignee_id] : [];
 };
@@ -584,15 +553,9 @@ const toggleTaskStatus = async (task: Task) => {
 
   try {
     await taskStore.updateTask(task.id, { status: newStatus });
-    showToast(
-      newStatus === "done" ? "✅ تسک تکمیل شد" : "🔄 تسک در حال انجام شد",
-    );
+    showToast(newStatus === "done" ? "✅ تسک تکمیل شد" : "🔄 تسک در حال انجام شد");
   } catch (error: any) {
-    if (
-      error.status === 422 ||
-      error.statusCode === 422 ||
-      error.response?.status === 422
-    ) {
+    if (error.status === 422 || error.statusCode === 422 || error.response?.status === 422) {
       showToast("❌ تغییر وضعیت مجاز نیست. ترتیب تغییرات: todo → doing → done");
     } else {
       showToast("خطایی رخ داد. لطفاً دوباره تلاش کنید");
@@ -614,7 +577,7 @@ const statusLabel = (s: Task["status"]) => {
 
 const statusBadgeClass = (s: Task["status"]) => {
   if (s === "done") return "bg-[#D1FAE5] text-[#10B981] border-emerald-100 w-[97px]";
-  if (s === "doing") return "bg-[#DBEAFE] text-[#3B82F6] border-blue-100 w-[97px]" ;
+  if (s === "doing") return "bg-[#DBEAFE] text-[#3B82F6] border-blue-100 w-[97px]";
 
   return "bg-slate-50 text-slate-700 border-slate-200 w-[97px]";
 };

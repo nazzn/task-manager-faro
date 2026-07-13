@@ -8,7 +8,9 @@
       class="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2 py-1 text-xs text-indigo-800"
     >
       {{ tag }}
-      <button type="button" @click="removeTag(idx)" class="text-indigo-600 hover:text-indigo-800">×</button>
+      <button type="button" class="text-indigo-600 hover:text-indigo-800" @click="removeTag(idx)">
+        ×
+      </button>
     </span>
     <input
       ref="inputRef"
@@ -18,7 +20,7 @@
       placeholder="برچسب جدید..."
       @keydown.enter.prevent="addTag"
       @blur="addTag"
-    />
+    >
   </div>
 </template>
 

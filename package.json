@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "farrow",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,7 +7,10 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint . --fix",
+    "format": "prettier --write \"**/*.{vue,ts,js,mjs,css,json}\"",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.11.3",
@@ -20,6 +23,10 @@
     "vue3-persian-datetime-picker": "^1.2.2"
   },
   "devDependencies": {
-    "@nuxtjs/tailwindcss": "^6.14.0"
+    "@nuxt/eslint": "^1.16.0",
+    "@nuxt/eslint-config": "^1.16.0",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.9.5"
   }
 }

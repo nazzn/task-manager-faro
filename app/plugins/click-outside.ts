@@ -1,10 +1,7 @@
-// app/plugins/click-outside.ts.ts 
+// app/plugins/click-outside.ts.ts
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.directive("click-outside", {
-    mounted(
-      el: HTMLElement & { _clickOutside?: (event: Event) => void },
-      binding
-    ) {
+    mounted(el: HTMLElement & { _clickOutside?: (event: Event) => void }, binding) {
       const handler = (event: Event) => {
         const target = event.target as Node;
 
@@ -22,9 +19,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       document.addEventListener("click", handler);
     },
 
-    unmounted(
-      el: HTMLElement & { _clickOutside?: (event: Event) => void }
-    ) {
+    unmounted(el: HTMLElement & { _clickOutside?: (event: Event) => void }) {
       if (el._clickOutside) {
         document.removeEventListener("click", el._clickOutside);
         delete el._clickOutside;

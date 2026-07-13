@@ -8,19 +8,11 @@
         src="/icons/taskModal/responsible.svg"
         alt="assignee"
         class="w-5 h-5 ml-2 grayscale opacity-60 pointer-events-none flex-shrink-0"
-      />
+      >
 
       <div v-click-outside="closeDropdown" class="w-full">
-        <button
-          type="button"
-          @click="isOpen = !isOpen"
-          class="w-full text-right"
-        >
-          <span
-            v-if="!modelValue.length"
-            class="text-sm text-slate-800"
-            >انتخاب مسئول</span
-          >
+        <button type="button" class="w-full text-right" @click="isOpen = !isOpen">
+          <span v-if="!modelValue.length" class="text-sm text-slate-800">انتخاب مسئول</span>
           <div v-else class="flex flex-wrap gap-1.5">
             <div
               v-for="id in modelValue"
@@ -28,11 +20,7 @@
               class="w-7 h-7 rounded-full bg-[#219653] text-white flex items-center justify-center text-xs font-bold"
               :title="users.find((u) => u.id === id)?.username"
             >
-              {{
-                (users.find((u) => u.id === id)?.username || "?")
-                  .charAt(0)
-                  .toUpperCase()
-              }}
+              {{ (users.find((u) => u.id === id)?.username || "?").charAt(0).toUpperCase() }}
             </div>
           </div>
         </button>
@@ -44,13 +32,13 @@
           <div
             v-for="user in users"
             :key="user.id"
-            @click.stop="toggle(user.id)"
             :class="[
               'flex items-center justify-between w-full my-1 gap-1 cursor-pointer text-sm rounded-lg transition-all',
               modelValue.includes(user.id)
                 ? 'bg-[#cacaca] text-white'
                 : 'hover:bg-slate-50 text-slate-700',
             ]"
+            @click.stop="toggle(user.id)"
           >
             <div class="flex items-center gap-2">
               <div
@@ -68,15 +56,10 @@
             <button
               v-if="modelValue.includes(user.id)"
               type="button"
-              @click.stop="remove(user.id)"
               class="w-5 h-5 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+              @click.stop="remove(user.id)"
             >
-              <svg
-                class="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   d="M6 18L18 6M6 6l12 12"
                   stroke-width="2.5"
@@ -89,10 +72,7 @@
         </div>
       </div>
     </div>
-    <span
-      v-if="error"
-      class="text-xs text-red-500 mt-1 block"
-    >
+    <span v-if="error" class="text-xs text-red-500 mt-1 block">
       {{ error }}
     </span>
   </div>

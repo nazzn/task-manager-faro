@@ -1,75 +1,44 @@
-# Nuxt Minimal Starter
+# Farrow
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A Persian (Farsi) task management application built with Nuxt 3.
+
+## Features
+
+- Task CRUD with subtasks, comments, and attachments
+- User assignment, priority, and status management
+- Authentication with role-based access (admin/manager/user)
+- Infinite scrolling for task lists
+- RTL layout with Persian date picker
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Copy the environment file and adjust as needed:
 
 ```bash
-# npm
+cp .env.example .env
+```
+
+## Development
+
+```bash
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
 ## Production
 
-Build the application for production:
-
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+npm run preview
 ```
 
-Locally preview production build:
+## Code Quality
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+npm run lint
+npm run format
+npm run typecheck
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

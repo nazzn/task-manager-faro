@@ -5,7 +5,7 @@
       src="/icons/taskModal/responsible.svg"
       alt="assignee"
       class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
-    />
+    >
     <div
       v-if="user"
       class="rounded-full flex items-center justify-center text-xs font-bold"
@@ -14,9 +14,7 @@
     >
       {{ user.username.charAt(0).toUpperCase() }}
     </div>
-    <span v-if="!user && !hideFallbackText" class="text-sm text-slate-400"
-      >تعیین نشده</span
-    >
+    <span v-if="!user && !hideFallbackText" class="text-sm text-slate-400">تعیین نشده</span>
     <span v-if="user && showName" class="text-sm text-slate-700 font-medium">
       {{ user.username }}
     </span>
@@ -43,15 +41,11 @@ const props = withDefaults(
   },
 );
 
-const sizeClass = computed(() =>
-  props.size === "sm" ? "w-8 h-8" : "w-7 h-7",
-);
+const sizeClass = computed(() => (props.size === "sm" ? "w-8 h-8" : "w-7 h-7"));
 
 const bgClass = computed(() => {
   if (!props.user) return "bg-slate-200 text-slate-600";
-  return props.variant === "light"
-    ? "bg-[#DDF1E5] text-[#219653]"
-    : "bg-[#219653] text-white";
+  return props.variant === "light" ? "bg-[#DDF1E5] text-[#219653]" : "bg-[#219653] text-white";
 });
 
 const textClass = "text-xs";

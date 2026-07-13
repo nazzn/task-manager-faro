@@ -8,10 +8,7 @@
     @keydown.esc.prevent="emit('close')"
   >
     <!-- Overlay -->
-    <div
-      class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-      @click="emit('close')"
-    />
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="emit('close')" />
 
     <!-- Modal -->
     <section
@@ -28,38 +25,29 @@
           <!-- دکمه ویرایش -->
           <button
             v-if="canEdit"
-            @click="emit('edit', localTask)"
             class="p-2 rounded-lg hover:bg-slate-100 transition"
             title="ویرایش"
+            @click="emit('edit', localTask)"
           >
             <IconEdit class="w-5 h-5" />
           </button>
           <!-- دکمه حذف -->
           <button
             v-if="canDelete"
-            @click="emit('delete', localTask.id)"
             class="p-2 rounded-lg hover:bg-red-100 transition"
             title="حذف"
+            @click="emit('delete', localTask.id)"
           >
             <IconTrash class="w-5 h-5 text-red-600" />
           </button>
           <!-- دکمه بستن (همیشه نمایش) -->
           <button
-            @click="emit('close')"
             class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"
             title="بستن"
+            @click="emit('close')"
           >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M6 18L18 6M6 6l12 12"
-                stroke-width="2.5"
-                stroke-linecap="round"
-              />
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" stroke-width="2.5" stroke-linecap="round" />
             </svg>
           </button>
         </div>
@@ -69,16 +57,14 @@
       <div v-if="isLoading" class="flex items-center justify-center py-12">
         <div
           class="w-6 h-6 border-2 border-[#238A63] border-t-transparent rounded-full animate-spin"
-        ></div>
+        />
       </div>
       <!-- Body با اسکرول اختصاصی -->
       <div class="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar">
         <div class="space-y-8">
           <!-- عنوان -->
           <div class="space-y-1">
-            <div
-              class="w-full border-b-2 border-slate-100 py-2 text-xl font-bold text-slate-800"
-            >
+            <div class="w-full border-b-2 border-slate-100 py-2 text-xl font-bold text-slate-800">
               {{ localTask.title }}
             </div>
           </div>
@@ -102,7 +88,7 @@
                   src="/icons/taskModal/calendar.svg"
                   alt="calendar"
                   class="w-5 h-5 ml-2 grayscale opacity-90 flex-shrink-0"
-                />
+                >
                 <div class="text-sm text-slate-700 truncate">
                   {{ formatDate(localTask.due_date) || "تعیین نشده" }}
                 </div>
@@ -118,7 +104,7 @@
                   src="/icons/taskModal/Label.svg"
                   alt="status"
                   class="w-5 h-5 ml-2 grayscale opacity-60"
-                />
+                >
                 <div class="text-sm text-slate-700">
                   {{ statusLabel }}
                 </div>
@@ -128,14 +114,12 @@
             <!-- زیرتسک‌ها (تعداد و درصد پیشرفت) -->
             <button
               type="button"
-              @click="showSubtasks = !showSubtasks"
               class="h-[46px] px-4 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 transition flex items-center gap-2"
+              @click="showSubtasks = !showSubtasks"
             >
               چک لیست
               <span class="text-xs text-slate-400"
-                >{{ completedSubtasks }}/{{
-                  localTask.subtasks?.length || 0
-                }}</span
+                >{{ completedSubtasks }}/{{ localTask.subtasks?.length || 0 }}</span
               >
             </button>
 
@@ -187,24 +171,18 @@
             v-if="showSubtasks && localTask.subtasks?.length"
             class="rounded-2xl border border-slate-200 bg-white p-4"
           >
-            <div
-              class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3"
-            >
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
               <h3 class="font-bold text-slate-700">چک لیست</h3>
               <span class="text-xs text-slate-400"
                 >{{ completedSubtasks }}/{{ localTask.subtasks.length }}</span
               >
             </div>
-            <div
-              class="w-full h-1.5 bg-slate-100 rounded-full mb-4 overflow-hidden"
-            >
+            <div class="w-full h-1.5 bg-slate-100 rounded-full mb-4 overflow-hidden">
               <div
                 class="h-full rounded-full transition-all duration-300"
-                :class="
-                  subtaskPercent === 100 ? 'bg-emerald-500' : 'bg-amber-500'
-                "
+                :class="subtaskPercent === 100 ? 'bg-emerald-500' : 'bg-amber-500'"
                 :style="{ width: subtaskPercent + '%' }"
-              ></div>
+              />
             </div>
             <div class="space-y-2">
               <div
@@ -215,9 +193,9 @@
                 <input
                   type="checkbox"
                   :checked="sub.is_completed"
-                  @click.stop="toggleSubtask(sub)"
                   class="accent-[#238A63] cursor-pointer"
-                />
+                  @click.stop="toggleSubtask(sub)"
+                >
                 <span class="text-sm text-slate-700">{{ sub.title }}</span>
               </div>
             </div>
@@ -235,9 +213,7 @@
 
           <!-- پیوست‌ها -->
           <div class="space-y-4">
-            <div
-              class="flex items-center justify-between border-b border-slate-100 pb-2"
-            >
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
               <h3 class="font-bold text-slate-700">پیوست‌ها</h3>
             </div>
             <div v-if="localTask.attachments?.length" class="space-y-2">
@@ -282,12 +258,7 @@
                   class="flex-shrink-0 p-1 text-slate-400 hover:text-[#219653] transition-colors"
                   title="دانلود"
                 >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       stroke-width="2"
@@ -296,15 +267,11 @@
                 </a>
               </component>
             </div>
-            <div v-else class="text-xs text-slate-400">
-              هیچ فایلی پیوست نشده است.
-            </div>
+            <div v-else class="text-xs text-slate-400">هیچ فایلی پیوست نشده است.</div>
           </div>
           <!-- بخش گزارش‌ها -->
           <div class="space-y-3 border-slate-100 pt-6">
-            <h3
-              class="font-bold text-slate-700 flex items-center gap-2 border-b py-2"
-            >
+            <h3 class="font-bold text-slate-700 flex items-center gap-2 border-b py-2">
               <svg
                 class="w-4 h-4 text-[#238A63]"
                 fill="none"
@@ -350,12 +317,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import type { Task, Subtask } from "~/stores/taskStore";
+import { computed, ref, onMounted, defineComponent, h } from "vue";
+import type { Task, Subtask } from "~/types";
 import { useTaskStore } from "~/stores/taskStore";
 import { getUserById } from "~/composables/useUsers";
 import { taskService } from "~/services/taskService";
-// type Tag = { id: number; name: string; color?: string }
+
 const props = defineProps<{
   task: Task;
   canEdit?: boolean;
@@ -370,7 +337,6 @@ const emit = defineEmits<{
 
 const taskStore = useTaskStore();
 
-// لود تسک از سرور تا ساب‌تسک و پیوست داشته باشیم
 const localTask = ref<Task>({ ...props.task });
 const isLoading = ref(false);
 
@@ -396,15 +362,11 @@ onMounted(async () => {
   }
 
   try {
-    const attRes: any = await $fetch(
-      `/api/tasks/${props.task.id}/attachments`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    const attRes: any = await $fetch(`/api/tasks/${props.task.id}/attachments`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     console.log("attachments response:", JSON.stringify(attRes));
-    localTask.value.attachments =
-      attRes?.data?.attachments ?? attRes?.data ?? attRes ?? [];
+    localTask.value.attachments = attRes?.data?.attachments ?? attRes?.data ?? attRes ?? [];
   } catch (e: any) {
     console.error("attachments error:", e.message, e.statusCode);
     localTask.value.attachments = [];
@@ -414,19 +376,15 @@ onMounted(async () => {
   console.log("=== FINAL localTask ===", JSON.stringify(localTask.value));
 });
 
-// نمایش وضعیت
 const statusLabel = computed(() => {
   const s = localTask.value.status;
   if (s === "todo") return "برای انجام  ";
   if (s === "doing") return "در حال انجام";
-
   if (s === "done") return "تکمیل شده";
   return s || "نامشخص";
 });
 
-const normalizedPriority = computed(() =>
-  String(localTask.value.priority || "").toLowerCase(),
-);
+const normalizedPriority = computed(() => String(localTask.value.priority || "").toLowerCase());
 const priorityLabel = computed(() => {
   const p = normalizedPriority.value;
   if (p === "high") return "فوری";
@@ -450,29 +408,9 @@ const subtaskPercentClass = computed(() => {
   return "text-slate-400";
 });
 
-// const allTags = ref<Tag[]>([])
-// const tagMap = computed(() => {
-//   const map: Record<number, Tag> = {}
-//   for (const tag of allTags.value) {
-//     map[tag.id] = tag
-//   }
-//   return map
-// })
-
-// onMounted(async () => {
-//   try {
-//     const res: any = await taskService.getTags()
-//     allTags.value = res?.data?.tags ?? res?.data ?? res ?? []
-//   } catch (e) {
-//     console.error("Failed to load tags:", e)
-//   }
-// })
-
 const formatDate = (date?: string | null) => {
   if (!date) return null;
-
   const d = new Date(date.replace(/-/g, "/"));
-
   return d.toLocaleDateString("fa-IR-u-ca-persian", {
     year: "numeric",
     month: "2-digit",
@@ -500,11 +438,8 @@ const formatFileSize = (bytes: number) => {
   const kb = bytes / 1024;
   return kb < 1024 ? `${kb.toFixed(0)} KB` : `${(kb / 1024).toFixed(1)} MB`;
 };
-</script>
 
-<script lang="ts">
-import { defineComponent, h } from "vue";
-export const IconEdit = defineComponent({
+const IconEdit = defineComponent({
   name: "IconEdit",
   setup(_, { attrs }) {
     return () =>
@@ -528,7 +463,8 @@ export const IconEdit = defineComponent({
       );
   },
 });
-export const IconTrash = defineComponent({
+
+const IconTrash = defineComponent({
   name: "IconTrash",
   setup(_, { attrs }) {
     return () =>

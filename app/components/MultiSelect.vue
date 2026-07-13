@@ -1,7 +1,7 @@
 <!-- app/components/MultiSelect.vue -->
 
 <template>
-  <div class="relative w-full" v-click-outside="close">
+  <div v-click-outside="close" class="relative w-full">
     <label v-if="label" class="block text-xs font-medium text-slate-500 mb-1">
       {{ label }}
     </label>
@@ -10,13 +10,10 @@
     <button
       type="button"
       class="w-full p-2 border border-[#89899214] rounded-xl cursor-pointer bg-white flex items-center flex-wrap gap-1 text-right"
-      @click="toggleOpen"
       :aria-expanded="isOpen"
+      @click="toggleOpen"
     >
-      <span
-        v-if="selectedLabels.length === 0"
-        class="text-[#111827CC] text-base font-bold"
-      >
+      <span v-if="selectedLabels.length === 0" class="text-[#111827CC] text-base font-bold">
         مسئول انجام:
       </span>
 
@@ -56,7 +53,7 @@
           class="pointer-events-none"
           :checked="modelValue.includes(option.value)"
           tabindex="-1"
-        />
+        >
         <span>{{ option.label }}</span>
       </button>
     </div>

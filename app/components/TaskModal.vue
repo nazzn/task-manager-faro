@@ -8,10 +8,7 @@
     @keydown.esc.prevent="handleCancel"
   >
     <!-- Overlay -->
-    <div
-      class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-      @click="handleCancel"
-    />
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="handleCancel" />
 
     <section
       class="relative w-full max-w-[750px] max-h-[95vh] overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-900/10 flex flex-col"
@@ -24,21 +21,12 @@
       >
         <h2 class="text-xl font-extrabold text-slate-800">{{ modalTitle }}</h2>
         <button
-          @click="handleCancel"
           class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"
           title="بستن"
+          @click="handleCancel"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M6 18L18 6M6 6l12 12"
-              stroke-width="2.5"
-              stroke-linecap="round"
-            />
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M6 18L18 6M6 6l12 12" stroke-width="2.5" stroke-linecap="round" />
           </svg>
         </button>
       </header>
@@ -55,10 +43,8 @@
               :class="{ 'border-red-400': titleError }"
               placeholder="عنوان وظیفه..."
               autofocus
-            />
-            <span v-if="titleError" class="text-xs text-red-500 font-medium">{{
-              titleError
-            }}</span>
+            >
+            <span v-if="titleError" class="text-xs text-red-500 font-medium">{{ titleError }}</span>
           </div>
 
           <!-- META ROW -->
@@ -81,7 +67,7 @@
                     src="/icons/taskModal/calendar.svg"
                     alt="calendar"
                     class="w-5 h-5 ml-2 opacity-90 flex-shrink-0"
-                  />
+                  >
 
                   <input
                     id="due-date-input"
@@ -90,8 +76,7 @@
                     readonly
                     placeholder="زمان یادآوری"
                     class="w-full bg-transparent text-sm text-right truncate outline-none cursor-pointer text-slate-700 placeholder:text-slate-400"
-                  />
-                  
+                  >
                 </div>
 
                 <client-only>
@@ -115,23 +100,21 @@
             <!-- Status -->
             <div class="w-[143px] relative">
               <div
-                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
                 v-click-outside="closeStatusDropdown"
+                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
               >
                 <img
                   src="/icons/taskModal/Label.svg"
                   alt="status"
                   class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
-                />
+                >
 
                 <button
                   type="button"
-                  @click="isStatusOpen = !isStatusOpen"
                   class="w-full text-right text-sm text-slate-700"
+                  @click="isStatusOpen = !isStatusOpen"
                 >
-                  <span class="truncate">{{
-                    statusLabel(taskForm.status)
-                  }}</span>
+                  <span class="truncate">{{ statusLabel(taskForm.status) }}</span>
                 </button>
               </div>
 
@@ -142,16 +125,16 @@
                 <div
                   v-for="st in statuses"
                   :key="st.value"
-                  @click="
-                    taskForm.status = st.value;
-                    isStatusOpen = false;
-                  "
                   :class="[
                     'flex items-center w-full px-3 py-2.5 cursor-pointer text-sm transition-all',
                     taskForm.status === st.value
                       ? 'bg-[#219653] text-white'
                       : 'hover:bg-slate-50 text-slate-700',
                   ]"
+                  @click="
+                    taskForm.status = st.value;
+                    isStatusOpen = false;
+                  "
                 >
                   <span>{{ st.label }}</span>
                 </div>
@@ -166,13 +149,11 @@
             <!-- Checklist Toggle -->
             <button
               type="button"
-              @click="toggleSubtasks"
               class="h-[46px] px-4 rounded-xl w-[143px] border border-slate-200 bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 transition flex items-center gap-2"
+              @click="toggleSubtasks"
             >
               چک لیست
-              <span class="text-xs text-slate-400">
-                ({{ taskForm.subtasks.length }})
-              </span>
+              <span class="text-xs text-slate-400"> ({{ taskForm.subtasks.length }}) </span>
             </button>
             <span v-if="subtasksError" class="text-xs text-red-500 block">
               {{ subtasksError }}
@@ -180,8 +161,8 @@
             <!-- Priority -->
             <div class="w-[143px] relative">
               <div
-                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
                 v-click-outside="closePriorityDropdown"
+                class="flex items-center h-[46px] rounded-xl border border-slate-200 bg-white px-3 cursor-pointer transition-all duration-200 hover:border-[#219653]"
               >
                 <svg
                   class="w-5 h-5 ml-2 grayscale opacity-60 flex-shrink-0"
@@ -199,12 +180,10 @@
 
                 <button
                   type="button"
-                  @click="isPriorityOpen = !isPriorityOpen"
                   class="w-full text-right text-sm text-slate-700"
+                  @click="isPriorityOpen = !isPriorityOpen"
                 >
-                  <span class="truncate">{{
-                    priorityLabel(taskForm.priority)
-                  }}</span>
+                  <span class="truncate">{{ priorityLabel(taskForm.priority) }}</span>
                 </button>
               </div>
 
@@ -215,16 +194,16 @@
                 <div
                   v-for="pr in priorities"
                   :key="pr.value"
-                  @click="
-                    taskForm.priority = pr.value;
-                    isPriorityOpen = false;
-                  "
                   :class="[
                     'flex items-center w-full px-3 py-2.5 cursor-pointer text-sm transition-all',
                     taskForm.priority === pr.value
                       ? 'bg-[#219653] text-white'
                       : 'hover:bg-slate-50 text-slate-700',
                   ]"
+                  @click="
+                    taskForm.priority = pr.value;
+                    isPriorityOpen = false;
+                  "
                 >
                   <span>{{ pr.label }}</span>
                 </div>
@@ -235,15 +214,13 @@
           <!-- Subtasks Panel -->
           <transition name="fade">
             <div v-if="showSubtasks" class="space-y-3 mt-4">
-              <div
-                class="flex items-center justify-between border-b border-slate-100 pb-2"
-              >
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                 <h3 class="font-bold text-slate-700">چک لیست</h3>
 
                 <button
                   type="button"
-                  @click="addSubtask()"
                   class="text-xl font-bold text-[#238A63] hover:text-[#1b6d4e]"
+                  @click="addSubtask()"
                 >
                   +
                 </button>
@@ -255,28 +232,26 @@
                   :key="s.id"
                   class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition group"
                 >
-                  <input type="checkbox" v-model="s.is_completed" />
+                  <input v-model="s.is_completed" type="checkbox" >
 
                   <input
                     v-model="s.title"
                     type="text"
                     class="flex-1 bg-transparent border-none outline-none text-sm"
                     placeholder="عنوان آیتم..."
-                  />
+                  >
 
                   <button
                     type="button"
-                    @click="removeSubtask(s.id)"
                     class="opacity-0 group-hover:opacity-100 transition text-red-500 hover:text-red-700"
+                    @click="removeSubtask(s.id)"
                   >
                     ✕
                   </button>
                 </div>
               </div>
 
-              <div v-else class="text-xs text-slate-400 text-center">
-                هنوز آیتمی ثبت نشده
-              </div>
+              <div v-else class="text-xs text-slate-400 text-center">هنوز آیتمی ثبت نشده</div>
             </div>
           </transition>
 
@@ -288,24 +263,19 @@
               class="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-7 outline-none transition-all focus:border-[#238A63] focus:ring-4 focus:ring-[#238A63]/5 min-h-[120px]"
               placeholder="توضیحات مربوط به این فعالیت..."
             />
-            <span
-              v-if="descriptionError"
-              class="text-xs text-red-500 mt-1 block"
-            >
+            <span v-if="descriptionError" class="text-xs text-red-500 mt-1 block">
               {{ descriptionError }}
             </span>
           </div>
 
           <!-- Attachments -->
           <div class="space-y-4">
-            <div
-              class="flex items-center justify-between border-b border-slate-100 pb-2"
-            >
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
               <h3 class="font-bold text-slate-700">پیوست‌ها</h3>
               <button
                 type="button"
-                @click="triggerFileInput"
                 class="text-xl font-bold text-[#238A63]"
+                @click="triggerFileInput"
               >
                 +
               </button>
@@ -315,7 +285,7 @@
                 multiple
                 class="hidden"
                 @change="handleFileUpload"
-              />
+              >
             </div>
 
             <div v-if="attachmentsLocal.length" class="space-y-2">
@@ -344,12 +314,7 @@
                   class="flex-shrink-0 p-1 text-slate-400 hover:text-[#219653] transition-colors"
                   title="دانلود"
                 >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       stroke-width="2"
@@ -357,30 +322,20 @@
                   </svg>
                 </a>
                 <button
-                  @click="removeAttachment(idx)"
                   class="flex-shrink-0 p-1 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-600"
                   title="حذف"
+                  @click="removeAttachment(idx)"
                 >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M6 18L18 6M6 6l12 12" stroke-width="2" />
                   </svg>
                 </button>
               </div>
             </div>
-            <div v-else class="text-xs text-slate-400">
-              فایلی پیوست نشده است.
-            </div>
+            <div v-else class="text-xs text-slate-400">فایلی پیوست نشده است.</div>
           </div>
         </form>
-        <div
-          v-if="errorMessage"
-          class="text-sm text-red-600 bg-red-50 p-3 rounded-xl mb-4 mx-6"
-        >
+        <div v-if="errorMessage" class="text-sm text-red-600 bg-red-50 p-3 rounded-xl mb-4 mx-6">
           {{ errorMessage }}
         </div>
       </div>
@@ -411,7 +366,7 @@
 
 <script setup lang="ts">
 import { computed, toRef, ref, onMounted, onUnmounted } from "vue";
-import type { Task, Subtask, TaskStatus } from "~/stores/taskStore";
+import type { Task, Subtask, TaskStatus } from "~/types";
 import { useTaskForm } from "~/composables/useTaskForm";
 import { useRole } from "~/composables/useRole";
 const { canCreateTask } = useRole();
@@ -438,8 +393,7 @@ const statuses: { value: TaskStatus; label: string }[] = [
   { value: "done", label: "تکمیل شده" },
 ];
 
-const statusLabel = (s: TaskStatus) =>
-  statuses.find((st) => st.value === s)?.label || s;
+const statusLabel = (s: TaskStatus) => statuses.find((st) => st.value === s)?.label || s;
 
 const priorities: { value: "low" | "medium" | "high"; label: string }[] = [
   { value: "low", label: "عادی" },
@@ -546,10 +500,7 @@ const closeDatePicker = () => {
 };
 
 const handleClickOutside = (event: MouseEvent) => {
-  if (
-    datePickerPanel.value &&
-    !datePickerPanel.value.contains(event.target as Node)
-  ) {
+  if (datePickerPanel.value && !datePickerPanel.value.contains(event.target as Node)) {
     closeDatePicker();
   }
 };
@@ -578,9 +529,7 @@ const handleSubmit = async () => {
     return;
   }
 
-  const files = attachmentsLocal.value
-    .filter((a: any) => a.file)
-    .map((a: any) => a.file) as File[];
+  const files = attachmentsLocal.value.filter((a: any) => a.file).map((a: any) => a.file) as File[];
   const result = await submit(files.length > 0 ? files : undefined);
   if (result.ok) {
     emit("close");
@@ -593,12 +542,8 @@ const handleCancel = () => {
   emit("close");
 };
 
-const modalTitle = computed(() =>
-  isEditing.value ? "ویرایش وظیفه" : "ایجاد وظیفه جدید",
-);
-const submitButtonText = computed(() =>
-  isEditing.value ? "بروزرسانی وظیفه" : "ثبت وظیفه",
-);
+const modalTitle = computed(() => (isEditing.value ? "ویرایش وظیفه" : "ایجاد وظیفه جدید"));
+const submitButtonText = computed(() => (isEditing.value ? "بروزرسانی وظیفه" : "ثبت وظیفه"));
 </script>
 
 <style scoped>
@@ -687,7 +632,7 @@ const submitButtonText = computed(() =>
 
 /* اگر خواستید همرنگ تم سبز شود */
 #due-date-input:focus::placeholder {
-  color: #238A63 !important;
+  color: #238a63 !important;
 }
 
 .vpd-main {
